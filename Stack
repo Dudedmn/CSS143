@@ -1,0 +1,180 @@
+/**
+ * @author Daniel Yan
+ * @date 2/22/2018
+ * Class: Stack
+ *
+ * Stack class that follows the FILO principle and Stack structure using a LinkedList
+ * Constructors:
+ * None
+ *
+ * Methods:
+ * push(Object) - Pushes the Stack down one level, by adding an Object to top of the Stack.
+ * pop() - Pops the top most Object of the Stack, removing the last added Object.
+ * insert(Object, int) - Inserts an Object at a specified int, however in this class acts the same as
+ * push() as Stacks are restricted to the FILO principle, only allowed to add from the top of the Stack.
+ * delete(int) - Deletes an Object at a specified int, however in this class, it instead only deletes the
+ * last added Object, acting the same as pop().
+ * remove(int) - Removes an Object at the specified int and returns it, in this case it acts the exact
+ * same as delete() but returns the Object removed.
+ * isEmpty() - Checks to see if the Stack is empty, same as superclass List.
+ *
+ * Note Stack doesn't need to change any of the following:
+ * indexOf() - Index counting and finding is still equivalent in Stack and Lists
+ * isEmpty() - Checking of the first Node is empty still applies to Stack Lists
+ * size() - Finding the size of a Stack List has the exact same logic
+ * append() - Pushing is simply appending
+ *
+ * */
+public class Stack extends List {
+    /**
+     * Main driver method that tests each method in Stack with edge cases and exception handling
+     * */
+    public static void main(String[] args) throws LinkedListException{
+        Stack empty = new Stack();
+        Stack one = new Stack();
+        Stack multiple = new Stack();
+
+        //Testing push, append, and insert
+        one.push(5);
+        multiple.append(10);
+        multiple.push(20);
+        multiple.insert(400, multiple.size());
+
+        //Append is redundant as it acts exactly the same as the push and insert methods here
+
+
+        //Printing out each Stack
+        System.out.println("Empty:"+empty + "empty size " + empty.size());
+        System.out.println("One:"+one + "one size " + one.size());
+        System.out.println("Multiple:"+ multiple + "multiple size " + multiple.size());
+
+        //FILO concept
+        //Note here pop and .delete(size() - 1) are equivalent, as Stack follows FILO, we must
+        //delete from the 'top' of each stack which in this case is the last Node values
+        //Here pop takes each Node value from the top or the 'right' side in this case
+        //Push then adds a Node value from the right, starting from the 'bottom' or left
+        multiple.pop();
+        System.out.println("Multiple " + multiple);
+        multiple.delete(multiple.size() - 1);
+        System.out.println("Multiple " + multiple);
+        multiple.pop();
+        System.out.println("Multiple " + multiple);
+        multiple.push(10);
+        System.out.println("Multiple " + multiple);
+        multiple.push(400);
+        System.out.println("Multiple " + multiple);
+        multiple.push(20);
+        System.out.println("Multiple " + multiple);
+        System.out.print("Pop order: ");
+
+        //Booleans
+        System.out.println("Is empty empty? " + empty.isEmpty());
+        System.out.println("Is one empty? " + one.isEmpty());
+        System.out.println("Is multiple empty? " + multiple.isEmpty());
+
+        //IndexOf
+        //Note that indexOf functions the same way as an Array, where it's base 0
+        System.out.println("What is the index of \'10\' " + multiple.indexOf(10));
+        System.out.println("what is teh index of \'400\' " + multiple.indexOf(400));
+        System.out.println("What is the index of \"Hello\" for multiple? " + multiple.indexOf("Hello"));
+        System.out.println("What is the index of \'w\' for multiple? " + multiple.indexOf('w'));
+        System.out.println("What is the index of \'20\' for multiple? " + multiple.indexOf(20));
+        System.out.println("What is the index of \"Not here\" for multiple? " + multiple.indexOf("Not here"));
+
+        while(!multiple.isEmpty()){
+            System.out.print(multiple + "|");
+           multiple.pop();
+        }
+        //As such pop order for 10, 400, 20 is: 20, 400, 10
+        //As such pop is the reversed order of push
+
+        one.delete(0);
+        System.out.println("Size of multiple " + multiple.size());
+        System.out.println("One (upon delete):"+one);
+        System.out.println("Multiple (upon delete):"+ multiple);
+
+
+
+
+        //Exception handling
+        //Cannot pop an empty Stack
+        //multiple.pop();
+        //Invalid insertion index
+        //one.insert(600, 1);
+        //Cannot insert a negative index
+        //one.insert("something", -1);
+        //Cannot delete from an empty Stack
+        //multiple.delete(multiple.size()-1);
+        //multiple.remove(0);
+        //Cannot delete from an invalid index
+        //multiple.delete(5);
+        //Cannot delete from a negative index
+        //multiple.delete(-5);
+        //Cannot insert anywhere other than the back of the Stack
+        //insert is applicable at 0 if Stack is empty
+        // multiple.insert("Hiya", 3);
+
+    }
+
+    /**
+     * Push method for Stack class, only adds an Object value to the end of the
+     * stack, abiding by the FILO concept.
+     *
+     * @param next Object that has some value stored within
+     * @return nothing
+     *
+     * Acts the exact same append() from the List parent class
+     * */
+    public void push(Object next) throws LinkedListException {
+        //size() is used as insert will correctly add the Object to the end of the list
+        super.insert(next, super.size());
+    }
+    /**
+     * Pop method for Stack class, only pops off the 'top' of the Stack or the last values
+     * in the Stack, abiding by the FILO concept.
+     *
+     * @param //nothing
+     * @return Object - Object value of the Node present at that Stack
+     * */
+    public Object pop() throws LinkedListException {
+        //size() - 1 is used as remove is based on the index value
+        if(super.isEmpty()) throw new LinkedListException("Stack is empty");
+        return super.remove(super.size() - 1);
+    }
+
+    @Override
+    /**
+     * Overridden insert method for List, restricts it to only be able to insert at the end of the Stack
+     *
+     * @param next - Object with some value
+     * @param index - int that is equal to the size() of the List
+     * @return nothing
+     * */
+    public void insert(Object next, int index) throws LinkedListException {
+        if (index != super.size()) throw new LinkedListException("Invalid index");
+        push(next);
+    }
+    /**
+     * Overridden delete method for List, restricts it to only delete the last Node value at the end of the
+     * Stack
+     *
+     * @param index - int that is the last value of the Stack List
+     * @return nothing
+     * */
+    public void delete(int index)throws LinkedListException{
+        if(index != (super.size() - 1) || super.isEmpty()) throw new LinkedListException("Invalid index");
+        pop();
+
+    }
+    /**
+     * Overridden remove method that functions identical to delete, however returns the Object as well
+     *
+     * @param index - int that is the last value of the Stack List
+     * @return Object that is removed
+     * */
+    public Object remove(int index) throws LinkedListException {
+        if (index != (super.size() - 1) || super.isEmpty()) throw new LinkedListException("Invalid index");
+        return pop();
+    }
+
+}

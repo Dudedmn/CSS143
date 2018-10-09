@@ -1,0 +1,29 @@
+/**
+ * Methods:
+ *
+ * countLines() - Counts the size of the txt file and returns that number as an int
+ * @author (Daniel Yan)
+ * @version (January 18th, 2018)
+ */
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class ObjectList {
+    ObjectList() throws IOException{
+        countLines();
+    }
+
+    public static int countLines() throws IOException{
+        int numLines = 0;
+        FileInputStream file = new FileInputStream("fractions.txt");
+        Scanner kb = new Scanner(file);
+        while (kb.hasNext()) {
+            numLines++;
+            kb.nextLine();
+        }
+        return numLines;
+    }
+
+
+}

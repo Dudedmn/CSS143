@@ -1,0 +1,113 @@
+/**
+ * @author Daniel Yan
+ * @date 2/13/18
+ *
+ * Methods:
+ * search(String[], String) - Iterative binary search that attempts to find a String
+ * target, returns an int if target is found or throws an ItemNotFoundException.
+ *
+ * recSearch(String[], String) - Recursive binary search that only uses binarySearchHelper.
+ *
+ * recSearchHelp(String[], String, int, int) - Recursive binary search helper method
+ * that uses the two ints to define min and max of array. Returns an int if target
+ * is found or throws an ItemNotFoundException if target is not found.
+ * */
+//Uses abstract method of search and recSearch from SearchAlgorithm
+//As well as public method of incrementCount
+public class BinarySearch extends SearchAlgorithm{
+
+
+    /**
+     * Iterative binary search that changes min and max according to mid
+     *
+     * If target is less than arr[mid] then min is mid + 1
+     * if target is greater than arr[mid] then max is mid - 1
+     *
+     * Returns the index of the target if found
+     * Throws an ItemNotFoundException if target is not found
+     * */
+    public int search(String[] arr, String target) throws ItemNotFoundException {
+        resetCount();
+        //Min size of array is 0
+        int min = 0;
+        //Max size of array is .length - 1
+        int max = arr.length - 1;
+        while (min <= max) {
+            //Mid point is just max + min / 2
+            int mid = (min + max) / 2;
+            //If mid index is the target, return mid
+            if(arr[mid].equals(target)) {
+                incrementCount();
+                return mid;
+            }
+            //Checks if target is 'less than' arr[mid]
+            else if (arr[mid].compareTo(target) < 0) {
+                incrementCount();
+                //If mid is less than target, min is mid + 1 now (shifts min up)
+                min = mid + 1;
+                //Checks if target is 'greater than' arr[mid]
+            } else if (arr[mid].compareTo(target) > 0) {
+                incrementCount();
+                //If mid is greater than target, max is mid - 1 now (shifts max down)
+                max = mid - 1;
+            } else {
+                //Target is found, return mid index
+                return mid;
+            }
+        }
+        //Target is not found, exception thrown
+        throw new ItemNotFoundException("Target not found");
+    }
+
+    /**
+     * Recursive Search that only uses the helper method binarySearchHelper
+     * */
+    public  int recSearch(String[] arr, String target) throws ItemNotFoundException{
+        resetCount();
+        //Uses helper method
+        //Min is 0th element of array, max is arr.length - 1
+        return binarySearchHelper(arr, target, 0, arr.length - 1);
+    }
+    /**
+     * Recursive binary search that changes min and max according to mid
+     *
+     * If target is less than arr[mid] then min is mid + 1
+     * if target is greater than arr[mid] then max is mid - 1
+     *
+     * Returns the index of the target if found
+     * Throws an ItemNotFoundException if target is not found
+     * */
+    private  int binarySearchHelper(String[] arr, String target, int min, int max) throws ItemNotFoundException{
+        //Min cannot be greater than max, likewise, max cannot be less than min
+        if(min > max){
+            throw new ItemNotFoundException("Target not found");
+        }
+        else {
+            //Mid is simply max + min / 2
+            int mid = (min + max) / 2;
+            //Checks if arr[mid] is target
+            if(arr[mid].equals(target)) {
+                incrementCount();
+                return mid;
+            }
+            //Checks if target is 'less than' arr[mid]
+            else if (arr[mid].compareTo(target) < 0){
+                incrementCount();
+                //Shift the min over one to the right
+                //Try again
+                return binarySearchHelper(arr, target, mid + 1, max);
+            }
+            //Checks if target is 'greater' than arr[mid]
+            else if (arr[mid].compareTo(target) > 0){
+                incrementCount();
+                //Shift the max over one to the left
+                //Try again
+                return binarySearchHelper(arr, target, min, mid - 1);
+            }
+            else {
+                //Target is found at mid, return mid index
+                return mid;
+            }
+        }
+    }
+}

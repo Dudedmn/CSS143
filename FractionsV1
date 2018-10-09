@@ -1,0 +1,202 @@
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Scanner;
+
+/**
+ * Determines the number of fractional occurrences, outputting the first inputted unique
+ * fraction into the console.
+ *
+ * Method:
+ *
+ * countNumLines() - Takes no input, initializes the three global arrays with the number
+ * of fractions, calculated by the number of lines read by Scanner;
+ *
+ * fractions(int,int) - Takes two ints as an input, with the first being numerator and second
+ * being the denominator respectively. Utilizes three different arrays to store each value,
+ * one being a double[] array, another a int[] array, and finally a String[]. Detects a
+ * unique fraction being inputted and creates an entry if true, if not it increments the
+ * counts[] for the respective Fraction by one.
+ *
+ * print() - Prints out the unique fractions and the number of counts each unique fraction
+ * has.
+ *
+ * reduce(double, double) - First calculates a double 'value' that is derived from numerator
+ * / denominator then subtracts one from the numerator and using a counter, calculates the
+ * number of equivalent values to the double 'value.' Has several edge cases to accommodate
+ * a varied amount of input. Commented out.
+ * <p>
+ * main - Takes a file termed "fractions.txt" utilizing FileInputStream and then scans the
+ * said file using a Scanner object, The first Scanner object is only utilized to scan whether
+ * the file contains another line or not. A String is then read in a while loop in order to
+ * prepare the String for delimiter usage, which a second Scanner object then proceeds to do.
+ * The second Scanner object utilizes a '/' or forward slash delimiter to separate the fraction
+ * into two recognizable ints. Afterwards the two ints are then placed into the gcd(int.int)
+ * method in order to calculate the GCD. A print statement then prints out the GCD to the
+ * console as the number of counts.
+ *
+ * @author (Daniel Yan)
+ * @version (January 4th, 2018)
+ */
+public class FractionsV1 {
+    //These global variables are needed as their values persist through methods
+    private static double[] values;
+    private static int[] counts;
+    private static String[] frac;
+    private static int numInput = 0;
+
+
+    /**
+     * Pre-conditions: None
+     * Post-conditions: Initializes the three arrays with the number of lines (fractions)
+     * */
+
+    private static void countNumLines() throws IOException{
+        int numLines = 0;
+        FileInputStream file = new FileInputStream("fractions.txt");
+        Scanner kb = new Scanner(file);
+        while(kb.hasNext()){
+            numLines++;
+            kb.nextLine();
+        }
+
+        values = new double[numLines];
+        counts = new int[numLines];
+        frac = new String[numLines];
+    }
+
+    /***
+     * Pre-conditions: Two valid ints
+     * Post-conditions: values[], counts[]. frac[] all have some sort of value within
+     * numInput is incremented for each unique fraction.
+     */
+    private static void fractions(int num, int dNum) {
+        boolean unique = true;
+        double val = (double) num / dNum;
+        //Determines whether the inputted value is unique or not
+        for (int i = 0; unique != false && i < values.length; i++) {
+            if (values[i] == val) {
+                unique = false;
+                //Increments the counts[] by 1 as there is a value that is not unique
+                counts[i]++;
+            }
+        }
+        //Creates an 'entry' for a unique fraction
+        if (unique) {
+            //numInput is used here to represent the number of unique fractions
+            values[numInput] = val;
+            counts[numInput] = 1;
+            frac[numInput] = num + "/" + dNum;
+            //As another unique fraction is created numInput is incremented
+            numInput++;
+        }
+
+
+    }
+    /**
+     * Pre-conditions: None
+     * Post-conditions: Prints out the current values of frac[] and counts[]
+     * */
+    private static void print() {
+        for (int i = 0; i < values.length; i++) {
+            //This prevents all the null counts
+            if (frac[i] != null)
+                //This prints out the respective count of each fraction
+                System.out.printf("%s has a count of %d%n", frac[i], counts[i]);
+        }
+
+    }
+
+    //Exception is thrown in this case as the input is not checked
+    public static void main(String[] args) throws Exception {
+        //Initializes the arrays with the correct number of inputs
+        countNumLines();
+        //Initializes needed variables
+        int num = 0, dNum = 0;
+        //This FileInputStream requires no file path, however it does require the expected
+        //txt file in the local directory.
+        FileInputStream file = new FileInputStream("fractions.txt");
+        Scanner scan = new Scanner(file);
+        //Checks whether the file contains another line
+        while (scan.hasNextLine()) {
+            //Stores the next String as 'split'
+            String split = scan.nextLine();
+            //Scanner with useDelimiter then 'splits' the String into two ints
+            Scanner scanTwo = new Scanner(split).useDelimiter("/");
+            //Second scanner object then reads the two ints
+            num = scanTwo.nextInt();
+            dNum = scanTwo.nextInt();
+            //Stores the two inputs (numerator, denominator) as a double value, and places it in double[] values
+            //Stores an associated count number with the double[] values and the fraction in String form into frac[]
+            fractions(num, dNum);
+        }
+        //Prints out the String value of fraction and the respective count associated with the fraction
+        print();
+
+    }
+
+    /* Questions
+     *
+     * Can you complete this without using arrays?
+     *
+     * - No, I do not believe that one can complete this without arrays. Given that
+     * you have to store some sort of counting tracker for each fraction, it's not
+     * plausible that one can have a unique counting tracker foe each fraction
+     * without an array.
+     *
+     * What is the least number of variables you can use to solve this problem?
+     * -Least number of variables you need is 5, 2 for the 2 inputted numbers, one for
+     * FileInputStream variable, and one either for String split or Scanner (with creative
+     * detection of the two ints and one for the array).
+     *
+     * Can you use just one array to solve this? What would the data type be of that array?
+     * - You could use a singe array (storing the values), this array would be String type
+     * as you would then use a value variable and compare it among each String fraction
+     * and keep track of the counts with another variable. In this scenario, you would
+     * essentially use the String array as a storage of the fractions then compare each
+     * input to the rest after the list is finished to determine counts and values. Per each
+     * unique String fraction the count variable is reset.
+     *
+     * What does it mean to make a class so another class is inside (or part of) the first class,
+     * so that it is composed of other data types?
+     * - It means that you have a parent class or 'super' class which then has a sub class
+     * present within, and through the form of encapsulation, the sub class will be allowed
+     * to use the provided datatypes from the parent class.
+     *
+     * What does "composition" mean in that case?  How is it done?
+     * - In this case (referring to the question above) composition is referring to the
+     * construction of classes and how they interact with each other. The sub class here will
+     * interact with the parent class as the sub class is contained within the parent class
+     * and will inherit the members of the parent class by default.
+     *
+     * What are some solutions to the reduction problem other than Euclid's GCD (greatest common divisor)
+     * algorithm? (You may want to look up GCD online.)
+     * - I've created a reduction method that simply matches up any reduced form of fractions to the first
+     * inputted form, and a counter to count how many times has been simplified. As such, in my method I
+     * didn't use Euclid's GCD algorithm given I only used double matches. See the comment below.
+     *
+     * private static int reduce(double num, double dNum) {
+
+        //Edge case for either input equivalent to 0, given that either input has 0 reducible fractions
+        if(num  == 0|| dNum == 0){
+            return 0;
+        }
+       int count = 1;
+       double val = num / dNum;
+       if(val == 1.0) return 1;
+        for(double i = num - 1; i > 0; i--){
+            for(double  j = dNum; j > 0; j--){
+
+                if(i / j == val ){
+                    //This block of print statements showcases every single value equivalent to 'value'
+                    //System.out.printf("val = %.2f%n", val );
+                    //System.out.printf("i / j = %.2f%n", i / j);
+                    //System.out.printf("i: %.2f | j: %.2f%n ",i,j);
+                count++;
+
+           }
+                }
+                    }
+                    return count;
+                    }
+       */
+}

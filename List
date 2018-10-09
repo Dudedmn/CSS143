@@ -1,0 +1,317 @@
+/**
+ * @author Daniel Yan
+ * @date 2/22/2018
+ *
+ * Class: List
+ *
+ * Framework for a Linked List class with an inner class Node. Follows the LinkedList Node structures.
+ *
+ * Constructor:
+ * Node(Object) - Creates a Node with a value of the object value
+ *
+ * Methods:
+ * insert(Object, int) - Attempts to insert a Node in between different Nodes for a valid index, returns nothing.
+ * Throws LinkedListException if index is invalid.
+ * remove(int) - Returns the Object value for the Node that is to be removed. Throws LinkedListException
+ * if index is invalid.
+ * append(Object) - Adds the Node to the end of the List.
+ * delete(int) - 'Deletes' the Node at the inputted int (in reality it destroys the pointer), returns nothing.
+ * Throws LinkedListException if index is invalid.
+ * indexOf(Object) - Attempts to find the index of the Object inputted, returns the int if found or -1 if not found.
+ * 0 based index.
+ * size() - Returns the number of Nodes in the List.
+ * toString() - Returns the enumerated String of all Node values in the list.
+ * isEmpty() - Returns a boolean value checking if the List is empty or not.
+ *
+ * */
+public class List {
+    /**
+     * Main driver method that tests each method for different conditions, including
+     * exception handling and edge cases.
+     * */
+    public static void main(String[] args) throws LinkedListException{
+        //List creation
+        List empty = new List();
+        List one = new List();
+        List multiple = new List();
+
+        //Append testing
+        one.append(5);
+        multiple.append(10);
+        multiple.append(20);
+        multiple.append(30);
+
+        //Print out each element for each list
+        System.out.println("Empty:"+empty + " empty size: " + empty.size());
+        System.out.println("One:"+one + " one size: " + one.size());
+        System.out.println("Multiple:"+ multiple + " multiple size: " + multiple.size());
+
+        one.delete(0);
+        //Tests that delete can delete a specific index
+        multiple.delete(1);
+        System.out.println("One (upon delete):"+one + " one size: " + one.size());
+        System.out.println("Multiple (upon delete):"+ multiple + " multiple size: " + multiple.size());
+
+        //Testing insert and append being equivalent if done at the end
+        one.insert("Hello", 1);
+        one.append("Hiya");
+        //Insert is equivalent to append when the inserted value is one above the actual index size
+        one.insert("Hello again",one.size());
+        //Deleting several Objects of one to get it back to one value
+        one.delete(0);
+        one.delete(0);
+
+        //Testing that insert indeed allows various Object types
+        multiple.insert(400/3.0, 2);
+        multiple.insert('w', 2);
+        multiple.insert("Hello", 2);
+        System.out.println("One (on insert):"+one);
+        System.out.println("Multiple(on insert):"+ multiple);
+
+        //Booleans
+        System.out.println("Is empty empty? " + empty.isEmpty());
+        System.out.println("Is one empty? " + one.isEmpty());
+        System.out.println("Is multiple empty? " + multiple.isEmpty());
+
+        //IndexOf
+        //Note that indexOf functions the same way as an Array, where it's base 0
+        System.out.println("What is the index of \'10\' " + multiple.indexOf(10));
+        System.out.println("what is teh index of \'30\' " + multiple.indexOf(30));
+        System.out.println("What is the index of \"Hello\" for multiple? " + multiple.indexOf("Hello"));
+        System.out.println("What is the index of \'w\' for multiple? " + multiple.indexOf('w'));
+        System.out.println("What is the index of \'400/3.0\' for multiple? " + multiple.indexOf(400/3.0));
+        System.out.println("What is the index of \"Not here\" for multiple? " + multiple.indexOf("Not here"));
+
+        //Exception Handling / Invalid inputs
+
+        //Cannot delete something that doesn't exist
+        //empty.delete(0);
+        //Cannot insert at an index that is greater than the size of the List
+        //one.insert(102,1000);
+        //Cannot insert at negative indexes
+        //multiple.insert("hi", -5);
+        //Cannot delete for negative indexes
+        //multiple.delete(-3);
+        //Cannot delete for indexes not reachable
+        //multiple.delete(15);
+        //one.delete(3);
+        System.out.println("New one: " +one);
+        System.out.println("New multiple: "+multiple);
+    }
+    /**
+     * Inner Node class that is used for List class
+     * @author Daniel Yan
+     * @date 2/22/2018
+     *
+     * Constructor:
+     * Node(Object) - Initializes a Node object with inputted object
+     * */
+    public class Node {
+        //Variables needed to be initialized, Node next here is needed to be the pointer for prior Nodes
+        Node next;
+        Object object;
+        /**
+         * Constructor that initializes a Node with an object value
+         * @param object -Object is some object inputted
+         * @return Nothing
+         * */
+        public Node(Object object) {
+            this.object = object;
+        }
+    }
+
+    Node head;
+    /**
+     * Method that inserts a Node with an object value at some int
+     * @param next - Object that has some value
+     * @param index - Index value which has some int value
+     * @return nothing
+     *
+     * If index is invalid, a LinkedListException is thrown
+     *
+     * */
+    public void insert(Object next, int index) throws LinkedListException {
+        //Checks if the current head is null or not
+        Node current = head;
+        if (current == null) {
+            //If the head is null, then create a new Node to be the head
+            head = new Node(next);
+            return;
+        }
+        //If the head isn't null, then a new Node is created with the next Object
+        Node newNode = new Node(next);
+        //This specific case addresses when the head isn't null and the insertion
+        //is to be done at the beginning of the node
+        if (index == 0) {
+            //'Skips' over the pointer and then makes a new pointer to the new Object
+            newNode.next = head;
+            head = newNode;
+            return;
+        }
+        //Exception handling for invalid index
+        //Not size() - 1 as you can just append the Object if index == size()
+        if (index > size() || index < 0) {
+            throw new LinkedListException("Index is invalid");
+        }
+        //Loop iteration to 'move' the Node selection towards a specific point
+        //i < index - 1 is used in order to avoid null pointers
+        for (int i = 0; current != null && i < index - 1; i++) {
+            current = current.next;
+        }
+        //Node is inserted between the other Nodes and pointers are remade
+        newNode.next = current.next;
+        current.next = newNode;
+
+
+    }
+    /**
+     * Method that attempts to remove a Node at some index
+     * @param index -Index is some int value
+     * @return Object - Object that is removed at the indicated index value
+     *
+     * If index is invalid, either negative or index out of bounds, a LinkedListException is thrown
+     * */
+    public Object remove(int index) throws LinkedListException{
+        //Check if list is empty
+        if (head == null) return null;
+        Node current = head;
+        //Deletes the first Node and returns the object there
+        if (index == 0) {
+            head = current.next;
+            return current.object;
+        }
+        //If index is greater than amount of Nodes
+        if (index > size() || index < 0) {
+            throw new LinkedListException("Index is invalid");
+        }
+        //Iterates through each Node to find the Node before the intended node
+        for (int i = 0; current != null && i < index - 1; i++) {
+            current = current.next;
+        }
+        //Pointer is stored on Node next to the deleted one
+        Node next = current.next.next;
+        //Deleted node is unlinked
+        current.next = next;
+        return current.object;
+
+    }
+    /**
+     * Method that adds a Node to the end of the List
+     * @param next -Mext is some Object with a value
+     * @return nothing
+     *
+     * Checks to see if the first Node is empty, if so then a new Node is added to the head
+     * Otherwise, iterates through all Nodes to find the last Node and add the new Node
+     * */
+    public void append(Object next) throws LinkedListException{
+        //If the list is empty create a new Node
+        if (head == null) {
+            head = new Node(next);
+            return;
+        }
+        Node current = head;
+        //While loop iterates to the end of the List
+        while (current.next != null) {
+            current = current.next;
+        }
+        //At the end of the List add a new Node
+        current.next = new Node(next);
+    }
+    /**
+     * Method that deletes a Node at the specified index
+     * @param index -Index is some int value
+     * @return nothing
+     *
+     * Acts the same manner as the remove method but has no return value
+     * */
+    public void delete(int index) throws LinkedListException {
+        //Logic is the same as remove() method, with the only difference being the lack of a return Object
+        if (head == null) throw new LinkedListException("Index is invalid");
+        Node current = head;
+        if (index == 0) {
+            head = current.next;
+            return;
+        }
+        if (index > size() || index < 0) {
+            throw new LinkedListException("Index is invalid");
+        }
+        for (int i = 0; current != null && i < index - 1; i++) {
+            current = current.next;
+        }
+        Node next = current.next.next;
+        current.next = next;
+    }
+    /**
+     * Method that returns the number of Nodes in the List or the size
+     *
+     * Counts the number of Nodes present in the List, similar to elements in an Array.
+     * @param  // nothing
+     * @return int - Number of Nodes present in the List
+     * */
+    public int size() {
+        //Counter to keep track of the number of Nodes
+        int count = 0;
+        Node current = head;
+        //Count the number of Nodes to the end of the List
+        while (current != null) {
+            count++;
+            current = current.next;
+        }
+        return count;
+    }
+    /**
+     * Method that enumerates all Object values for the nodes into a single String it returns
+     * @param //nothing
+     * @return String -Enumerated String of all Object values
+     * */
+    public String toString() {
+        Node current = head;
+        String listString = "";
+        while (current != null) {
+            //Concatenates listString with the Object value as a String into one String
+            listString += current.object + " ";
+            //Iterates through each Node to the last Node
+            current = current.next;
+        }
+        return listString;
+    }
+    /**
+     * Method that checks if the List is empty, only needs to check if the head is empty to check
+     * if a List is empty
+     * @param //nothing
+     * @return boolean -Whether if head is null or not
+     * */
+    public boolean isEmpty() {
+        //If the head Node is empty, then the entire List is empty
+        //Using parenthesis skips the need of an if else
+        return (head == null);
+    }
+    /**
+     * Method that attempts to find the index of some Object if it exists within the List. If
+     * the Object is not found, -1 is returned, otherwise the index of the Object is found.
+     *
+     * @param  //nothing
+     * @return int -Index of target or -1 if not found
+     * */
+    public int indexOf(Object target) {
+        //Counter functions the same as the size() counter
+        int count = 0;
+        Node current = head;
+        //In the case that we've reached the end, or in an empty List, target is not found, return -1
+        if (current == null || current.next == null) return -1;
+        //Checks if the head is equal to the target
+        if(current.object.equals(target)) return count;
+
+        while (current.next != null) {
+            count++;
+            //Iterate through each Node in the List
+            current = current.next;
+            //Check if the Object value equals the target Object
+            if (current.object.equals(target)) return count;
+
+
+        }
+        //Otherwise target wasn't found in the List
+        return -1;
+    }
+}

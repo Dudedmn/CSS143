@@ -1,0 +1,166 @@
+/**
+ *@author Daniel Yan
+ * @date 2/22/2018
+ * Class: Queue
+ *
+ * Queue class that follows the FIFO principle and Queue structure using a LinkedList
+ * Constructors:
+ * None
+ *
+ * Methods:
+ * enqueue(Object) - Adds an Object to the start of the Queue.
+ * dequeue () - Removes the chronologically placed Objects in the Queue, following the FIFO principle where
+ * the first Objects in the Queue are the firsts to be removed.
+ * insert(Object, int) - Inserts an Object at a specified index, however in this class it acts exactly as the same as
+ * enqueue(), only adding an Object at the start of the Queue.
+ * delete(int) - Deletes an Object at a specified index, however in this class it acts exactly the same as
+ * dequeue() as Queue's are restricted in following the FIFO structure
+ * remove(int) - Deletes an Object at the specified index and returns it, however as Queue has restrictions, this
+ * method follows the restrictions as delete(). Returns an Object.
+ * isEmpty() - Returns a boolean on whether the Queue is empty or not, unchanged from superclass List.
+ * append(Object) - Only allows append to work when Queue is empty, as it otherwise violates FIFO principle
+ *
+ * Note Queue doesn't need to change any of the following:
+ * indexOf() - Index counting and finding is still equivalent in Queue and Lists
+ * isEmpty() - Checking of the first Node is empty still applies to Queue Lists
+ * size() - Finding the size of a QueueList has the exact same logic
+ * */
+public class Queue extends List {
+    /**
+     * Main driver that tests for each method and exception handling as well as edge cases
+     * */
+    public static void main(String[] args) throws LinkedListException{
+        Queue empty = new Queue();
+        Queue one = new Queue();
+        Queue multiple = new Queue();
+
+        //FIFO enqueue, only adds Nodes to the 'left' or the beginning of the Queue
+        one.enqueue("value");
+        multiple.enqueue(10);
+        System.out.println("Multiple: " + multiple);
+        multiple.enqueue(20);
+        System.out.println("Multiple: " + multiple);
+        multiple.insert(30, 0);
+
+        System.out.println("Multiple:"+ multiple + "multiple size " + multiple.size());
+        System.out.println("Empty:"+empty + "empty size " + empty.size());
+        System.out.println("One:"+one + "one size " + one.size());
+
+        //Booleans
+        System.out.println("Is empty empty? " + empty.isEmpty());
+        System.out.println("Is one empty? " + one.isEmpty());
+        System.out.println("Is multiple empty? " + multiple.isEmpty());
+
+        //IndexOf
+        //Note that indexOf functions the same way as an Array, where it's base 0
+        System.out.println("What is the index of \'10\' " + multiple.indexOf(10));
+        System.out.println("what is teh index of \'30\' " + multiple.indexOf(30));
+        System.out.println("What is the index of \"Hello\" for multiple? " + multiple.indexOf("Hello"));
+        System.out.println("What is the index of \'w\' for multiple? " + multiple.indexOf('w'));
+        System.out.println("What is the index of \'20\' for multiple? " + multiple.indexOf(20));
+        System.out.println("What is the index of \"Not here\" for multiple? " + multiple.indexOf("Not here"));
+
+
+        //FIFO dequeue concept, only removes the first added Nodes
+        System.out.println("Mutiple: " + multiple);
+        multiple.dequeue();
+        System.out.println("Multiple: " + multiple);
+        multiple.dequeue();
+        System.out.println("Multiple: " + multiple);
+
+        //Nodes are removed in a FIFO basis: 10, 30, 20 which was the chronological ordering
+
+        //Multiple must be deleting the first added Nodes
+        multiple.delete(multiple.size() - 1);
+        System.out.println("One (upon delete):"+one);
+        System.out.println("Multiple (upon delete):"+ multiple);
+
+        //Exception Handling
+        //Cannot insert an Object at an index
+        //multiple.insert(600, 1);
+        //Cannot delete from an empty Queue
+        //one.delete(0);
+        //one.remove(0);
+        //one.dequeue();
+        //Cannot delete from an invalid index
+        //one.delete(5);
+        //one.remove(5);
+        //one.delete(-5);
+        //one.remove(-5);
+        //Cannot append if Queue is not empty
+        //multiple.append("Something");
+
+    }
+
+    /**
+     * Method that 'enqueues' a Node which adds it to the Queue in a FIFO manner
+     * Nodes are added to the beginning of the Queue in a 'left to right manner' where oldest is on the right
+     *
+     * @param next - Object that has some Object value
+     * @returns nothing
+     * */
+    public void enqueue(Object next) throws LinkedListException {
+        super.insert(next, 0);
+    }
+    /**
+     * Method that removes the added Nodes in chronological order according to FIFO
+     * As enqueue adds Nodes from left to right, the first Node added is the first removed, starting
+     * from the right
+     *
+     * @param //nothing
+     * @returns nothing
+     * */
+    public Object dequeue() throws LinkedListException {
+        if(super.isEmpty()) throw new LinkedListException("Queue is empty");
+        return super.remove(0);
+    }
+
+    @Override
+    /**
+     * Overridden method from the parent List that checks if index is anything but 0
+     * as insertion must begin at the beginning of the Queue.
+     *
+     * @param next -Object that has some Object value
+     * @param index - Only at the index 0
+     * @returns nothing
+     * */
+    public void insert(Object next, int index) throws LinkedListException {
+        if (index != 0) throw new LinkedListException("Invalid index");
+        enqueue(next);
+    }
+    /**
+     * Overridden method from the parent List that deletes the chronologically added Nodes
+     * in a FIFO fashion
+     *
+     * @param index - Index should only be the last index of the Queue
+     * @returns nothing
+     * */
+    public void delete(int index)throws LinkedListException{
+        if(index != super.size() - 1 || super.isEmpty()) throw new LinkedListException("Invalid index");
+        dequeue();
+
+    }
+    /**
+     * Overridden method from the parent List that deletes the chronologically added Nodes
+     * in a FIFO fashion. Functions identical to delete except in returning an Object
+     *
+     * @param index - Index should only be the last index of the Queue
+     * @returns Object that is removed
+     * */
+    public Object remove(int index) throws LinkedListException {
+        if (index != super.size() - 1 || super.isEmpty()) throw new LinkedListException("Invalid index");
+        return dequeue();
+    }
+    /**
+     * Overridden method from parent List that restricts append to only when the Queue is empty.
+     * As one cannot add Nodes to the end of a Queue as it violated the FIFO principle.
+     *
+     * @param next - Object with some value
+     * @returns nothing
+     */
+    public void append(Object next) throws LinkedListException{
+        if(super.isEmpty());
+        super.append(next);
+        throw new LinkedListException("Append cannot be applied");
+    }
+}

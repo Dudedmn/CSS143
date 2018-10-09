@@ -1,0 +1,16 @@
+public class LinkedListException extends Exception {
+    /**
+     * Constructor for Exception Object
+     */
+    public LinkedListException() {
+        super();
+    }
+
+    /**
+     * Constructor with a message
+     */
+    public LinkedListException(String message) {
+        super(message);
+    }
+}
+

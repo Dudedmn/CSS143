@@ -1,0 +1,209 @@
+/**
+ * Driver class for Fraction, FractionCounter, and ObjectList
+ * <p>
+ * Methods:
+ * countLines() - Counts the number of lines within the "fractions.txt" and initializes
+ * multiple arrays to the size of the lines
+ * <p>
+ * print() - Prints out the contents of the Fraction[] and FractionCounter[] arrays
+ * <p>
+ * fractions(int,int) - Checks to see if there are unique fractions, and store them in the
+ * Fraction[] if that's the case, and otherwise increment counts
+ * <p>
+ * fractions(double,double) - Functions identical to fractinos(int,int) with fractions as
+ * double parameters
+ *
+ * @author (Daniel Yan)
+ * @version (January 18th, 2018)
+ */
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
+
+public class FractionDriver {
+
+    private static int numInput = 0;
+    public static Fraction[] fracArray;
+    public static FractionCounter[] fracCount;
+    static FractionCounter fracCounter;
+    private static double[] values;
+    private static int[] counts;
+
+    /**
+     * Pre-conditions: None
+     * Post-conditions: Initializes all arrays according to the txt file line length
+     *
+     * */
+    private static void countLines() throws IOException {
+        int length;
+        ObjectList obl = new ObjectList();
+        length = obl.countLines();
+        fracArray = new Fraction[length];
+        fracCount = new FractionCounter[length];
+        values = new double[length];
+        counts = new int[length];
+
+
+    }
+
+    /***
+     * Pre-conditions: fracArray, fracCount all have some sort of values
+     * Post-conditions: Prints out each value from fracArray and fracCount
+     */
+
+    private static void print() {
+        for (int i = 0; i < values.length; i++) {
+            //This prevents all the null counts
+            if (fracArray[i] != null)
+                //This prints out the respective count of each fraction
+                System.out.printf("%s has a count of %s%n", fracArray[i], fracCount[i].toString());
+        }
+
+    }
+
+    /**
+     * Pre-conditions: None
+     * Post-conditions: Reads each line of a fractions.txt file one line at a time, catching
+     * various inputs and redirecting them to an appropriate action
+     *
+     * Notable case: If an integer is passed in too large or small, it will be skipped given
+     * ints are only 32 bit. Scanner utilizes integer first to detect fractions.
+     *
+     * */
+    public static void main(String[] args) throws IOException {
+        //Initializes array based upon the file line length with ObjectList
+        countLines();
+
+        //Initializes needed variables
+        int num = 0, dNum = 0;
+        //Just a double version of numerator and denominator
+        double doubleNum = 0, doubledNum = 0;
+        //This FileInputStream requires no file path, however it does require the expected
+        //txt file in the local directory. Assuming the txt file is correctly named
+        try {
+            FileInputStream file = new FileInputStream("fractions.txt");
+            Scanner scan = new Scanner(file);
+            //Checks whether the file contains another line
+            while (scan.hasNextLine()) {
+                //Stores the next String as 'split'
+                String split = scan.nextLine();
+                //This is another catch case which happens earlier to make sure blank lines are skipped
+                if (split.equals("")) {
+                    split = scan.nextLine();
+                }
+                //Scanner with useDelimiter then 'splits' the String into two ints
+                Scanner scanTwo = new Scanner(split).useDelimiter("/");
+                //Second scanner object then reads the two ints
+                try {
+                    num = scanTwo.nextInt();
+                    dNum = scanTwo.nextInt();
+
+                    //Stores the two inputs (numerator, denominator) as a double value, and places it in double[] values
+                    //Stores an associated count number with the double[] values and the fraction in String form into frac[]
+                    if (num > 0 && dNum > 0 ||
+                            num < 0 && dNum < 0 ||
+                            num > Integer.MAX_VALUE || dNum > Integer.MAX_VALUE) fractions(num, dNum);
+                    else if(num == 0 && dNum != 0){
+                        fractions(0, dNum);
+                    }
+                } catch (InputMismatchException e) {
+                    try {
+                        //This is catching the case of where the inputs are doubles
+                        doubleNum = scanTwo.nextDouble();
+                        doubledNum = scanTwo.nextDouble();
+                        if (doubleNum > 0 && doubledNum > 0 ||
+                                doubleNum < 0 && doubledNum < 0) fractions(doubleNum, doubledNum);
+                    }
+                    //In the case there is another input mismatch, this time it should be String type or
+                    //similar to it, as such the scanner simply 'eats' the next line
+                    catch (InputMismatchException String) {
+                        scanTwo.nextLine();
+                    } catch (NoSuchElementException String) {
+                        //Simply ignores no such element
+                    }
+                } catch (NoSuchElementException e) {
+                    //Simply ignores no such element
+                }
+            }
+            //Prints out the String value of fraction and the respective count associated with the fraction
+            print();
+        } catch (FileNotFoundException e) {
+            System.out.println("Enter the correct filename for the txt file next time");
+            System.exit(0);
+        }
+    }
+
+    /**
+     * Pre-conditions: Assumes two valid doubles are inputted, arrays are initialized with proper lengths
+     * Post-conditions: Adds the proper elements to respective arrays, keeps number of unique
+     * fraction counts.
+     *
+     * Identical to the fractions(int,int) version, this is simply an overloaded method
+     * */
+    private static void fractions(double num, double dNum) {
+        boolean unique = true;
+        double val = num / dNum;
+        //Determines whether the inputted value is unique or not
+        for (int i = 0; unique != false && i < values.length; i++) {
+            if (values[i] == val) {
+                unique = false;
+                //Increments the counts[] by 1 as there is a value that is not unique
+                counts[i]++;
+                //A bit of an oddity here, this is a conversion of FractionCount objects
+                //with the counted ints of counts[] being passed into FractionCounter constructor
+                //to create a FractionCounter object
+                fracCount[i] = new FractionCounter(counts[i]);
+            }
+        }
+        //Creates an 'entry' for a unique fraction
+        if (unique) {
+            //numInput is used here to represent the number of unique fractions
+            values[numInput] = val;
+            counts[numInput] = 1;
+            fracCount[numInput] = new FractionCounter(counts[numInput]);
+            fracArray[numInput] = new Fraction(num, dNum);
+            if(fracCount[numInput + 1] != null){
+                fracCounter.compareAndIncrement(fracCount[numInput]);
+            }
+            //As another unique fraction is created numInput is incremented
+            numInput++;
+        }
+    }
+
+    /**
+     * Pre-conditions: Assumes two valid ints are inputted, arrays are initialized with proper lengths
+     * Post-conditions: Adds the proper elements to respective arrays, keeps number of unique
+     * fraction counts.
+     *
+     * Identical to the fractions(double,double) as this is an overloaded method
+     * */
+    private static void fractions(int num, int dNum) {
+        boolean unique = true;
+        double val = (double) num / dNum;
+        for (int i = 0; unique != false && i < values.length; i++) {
+            if (values[i] == val) {
+                unique = false;
+                //Increments the counts[] by 1 as there is a value that is not unique
+                counts[i]++;
+                fracCount[i] = new FractionCounter(counts[i]);
+            }
+        }
+        if (unique) {
+            values[numInput] = val;
+            counts[numInput] = 1;
+            fracCount[numInput] = new FractionCounter(counts[numInput]);
+            fracArray[numInput] = new Fraction(num, dNum);
+            if(fracCount[numInput + 1] != null){
+                fracCounter.compareAndIncrement(fracCount[numInput]);
+            }
+            numInput++;
+        }
+
+    }
+
+}

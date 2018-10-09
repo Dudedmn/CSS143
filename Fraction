@@ -1,0 +1,124 @@
+import java.util.InputMismatchException;
+
+/**
+ * Fraction class makes Fraction objects and initializes them dependent on parameters
+ * Constructors:
+ * Fraction() - Placeholder
+ * Fraction(int,int) - Initializes the numerator to the first int and denominator to second int, then
+ * calls the reduceRatio method which reduces the fraction to the lowest possible state.
+ * Fraction(double,double) - Functions identical to the Fraction(int,int) but uses double inputs instead,
+ * an overloaded reduceRatio is then called alongside an overloaded GCD method.
+ * <p>
+ * Methods:
+ * GCD(int, int) - Uses Euclidean GCD algorithm to reduce a number to the GCD
+ * GCD(double,double) - Same as GCD(int,int) but overloaded for double
+ * reduceRatio(int,int) - Takes two integers as the 'fraction' and uses GCD to reduce them to the
+ * lowest possible ratio
+ * reduceRatio(double,double) - Same as reduceRatio(int,int) but overloaded for double
+ * getNumerator(int i) - Gets the numerator
+ * getDenominator(int i) - Gets the denominator
+ * getDoubleNumerator(double i) - Gets the numerator (double)
+ * getDoubleDenominator(double i) - Gets the denominator (double)
+ * equals(Fraction other) - Checks if another Fraction object is equivalent
+ *
+ * Setters are not needed as fractions are not mutated after they're read
+ * @author (Daniel Yan)
+ * @version (January 18th, 2018)
+ */
+public class Fraction {
+
+    private int numerator = 0, denominator = 0;
+    private double dNumerator = 0, dDenominator = 0;
+    private String reduced = "";
+
+
+    Fraction() {
+
+    }
+
+    Fraction(int num, int dNum) {
+        this.numerator = num;
+        this.denominator = dNum;
+        reduceRatio(num, dNum);
+
+    }
+
+    Fraction(double num, double dNum) {
+        this.dNumerator = num;
+        this.dDenominator = dNum;
+        reduceRatio(num, dNum);
+    }
+
+    private static int GCD(int num, int dNum) {
+        while (dNum != 0) {
+            int temp = dNum;
+            dNum = num % dNum;
+            num = temp;
+        }
+        return num;
+    }
+
+    private static double GCD(double num, double dNum) {
+        while (dNum != 0) {
+            double temp = dNum;
+            dNum = num % dNum;
+            num = temp;
+        }
+        return num;
+    }
+
+    private String reduceRatio(int num, int dNum) {
+        reduced = num / GCD(num, dNum) + "/" + dNum / GCD(num, dNum);
+
+        return reduced;
+    }
+
+    private String reduceRatio(double num, double dNum) {
+        reduced = num / GCD(num, dNum) + "/" + dNum / GCD(num, dNum);
+
+        return reduced;
+    }
+
+
+    public boolean equals(Fraction other) {
+        try {
+            if (other.numerator == getNumerator() &&
+                    other.denominator == getDenominator()) {
+                return true;
+            }
+        }
+        catch(InputMismatchException e){if (other.numerator == getDoubleNumerator() &&
+                other.denominator == getDoubleDenominator()) {
+            return true;
+        }}
+        return false;
+
+    }
+
+    @Override
+    public String toString() {
+        return reduced;
+    }
+
+    public int getNumerator() {
+
+        return this.numerator;
+    }
+
+    public int getDenominator() {
+
+        return this.denominator;
+    }
+
+    public double getDoubleNumerator() {
+
+        return this.dNumerator;
+    }
+
+    public double getDoubleDenominator() {
+
+        return this.dDenominator;
+    }
+
+
+}

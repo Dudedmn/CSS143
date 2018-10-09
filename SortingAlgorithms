@@ -1,0 +1,86 @@
+public class SortingAlgorithms {
+    int[] randInts;
+
+    public static void main(String[] args) {
+        SortingAlgorithms bs = new SortingAlgorithms();
+      //  bs.bubbleSortArray();
+        bs.insertionSortArray();
+        //bs.selectionSortArray();
+    }
+
+    SortingAlgorithms() {
+        addValues();
+        printArray();
+    }
+
+    int randomRange(int min, int max) {
+        int range = (max - min) + 1;
+        return (int) (Math.random() * range) + min;
+    }
+
+    void printArray() {
+        for (int i = 0; i < randInts.length; i++) {
+            if (i != randInts.length - 1)
+                System.out.print(randInts[i] + ", ");
+            else System.out.println(randInts[i]);
+        }
+        System.out.println();
+    }
+
+    void addValues() {
+        randInts = new int[10];
+        for (int i = 0; i < randInts.length; i++) {
+            randInts[i] = randomRange(0, 100);
+        }
+    }
+
+    void bubbleSortArray() {
+        System.out.println("Bubble Sort");
+        for (int i = 0; i < randInts.length; i++) {
+            for (int j = i + 1; j < randInts.length; j++) {
+                if (randInts[j] < randInts[i]) {
+                    int temp = randInts[i];
+                    randInts[i] = randInts[j];
+                    randInts[j] = temp;
+                }
+            }
+        }
+        printArray();
+    }
+
+
+    void insertionSortArray() {
+        System.out.println("Insertion Sort");
+        for (int i = 1; i < randInts.length; i++) {
+            int j = i - 1;
+            int valueCheck = randInts[i];
+
+            while (j >= 0 && randInts[j] > valueCheck) {
+                System.out.println("Before: j + 1: " + randInts[j + 1] + " j: " + randInts[j]);
+            randInts[j + 1] = randInts[j];
+                System.out.println("After: j + 1: " + randInts[j + 1] + " j: " + randInts[j]);
+                j--;
+                System.out.println("j: " + j);
+            }
+             randInts[j + 1] = valueCheck;
+        }
+        printArray();
+    }
+
+    void selectionSortArray() {
+        System.out.println("Selection Sort");
+        for (int i = 0; i < randInts.length; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < randInts.length; j++) {
+                if (randInts[j] < randInts[minIndex])
+                    minIndex = j;
+            }
+            int temp = randInts[i];
+            randInts[i] = randInts[minIndex];
+            randInts[minIndex] = temp;
+        }
+        printArray();
+    }
+
+
+}

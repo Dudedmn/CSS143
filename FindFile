@@ -1,0 +1,130 @@
+/**
+ * @author Daniel Yan
+ * @date 2/13/2018
+ *
+ * Recursively finds a target String file (with extension name) and returns the path name to a String[]
+ *
+ * Constructors:
+ * FindFile(String, String, int) - Initializes a FindFile object with the directory name, target file, and max number of
+ * files to count
+ *
+ * Methods:
+ * directorySearch(String dirName, String target) - Fills a String[] with the full path of the target file,
+ * throws an IllegalArguementException in the case of an invalid directory path.
+ *
+ * getCount() - Returns the number of counts for the target as an int.
+ *
+ * getFiles() - Returns the file paths of target as an String[]
+ *
+ * printArray() - Prints the non-null elements in getFiles()
+ *
+ * */
+import java.io.File;
+
+
+public class FindFile {
+    //Final int for static number of files
+    public final int MAX_NUMBER_OF_FILES_TO_FIND;
+    //Counter for number of found targets
+    private int count = 0;
+    //String[] to store paths
+    private String[] filePaths;
+
+    /**
+     * Single constructor that initializes the max number of files to find
+     * */
+    FindFile(String dirName, String target, int maxFiles) {
+        //Initialization of final int
+        MAX_NUMBER_OF_FILES_TO_FIND = maxFiles;
+        //Sets String[] to proper size (ensures that array has enough space)
+        filePaths = new String[MAX_NUMBER_OF_FILES_TO_FIND];
+        //Utilizes directorySearch() to find the file in question
+        directorySearch(dirName, target);
+    }
+
+    /**
+     * Method that recursively finds the paths of a target file starting from a directory and returns
+     * the paths as a String[]
+     *
+     * Checks if directory is valid or not
+     * Counts the number of found targets for getCount()
+     *
+     * */
+    public void directorySearch(String dirName, String target) {
+
+        File fileLook = new File(dirName);
+        File[] listOfFiles = fileLook.listFiles();
+        //Checks to see if directory is valid or not
+        if (!(fileLook.isDirectory()))
+            //Exception is thrown if directory is invalid
+            throw new IllegalArgumentException("Invalid Directory");
+        //Some directories may have no values, null is simply returned
+        if (listOfFiles == null)
+            //If an exception is thrown, the method will be halted
+            return;
+
+        //For each file in the list of Files, we check to see if it's a directory or not
+        for (File f : listOfFiles) {
+            if (f.isDirectory()) {
+                //If it's a directory, recursively search in the directory
+                //Ensure that it's getAbsolutePath to find the root directory
+                directorySearch(f.getAbsolutePath(), target);
+            } else {
+                //If the targeted file is found, ensure it's less than max number of files
+                if (f.getName().equals(target) && count < MAX_NUMBER_OF_FILES_TO_FIND) {
+                    //Set the String array element to the path name
+                    filePaths[count] = f.getPath();
+                    //Increment count to ensure it's under MAX_NUMBER_OF_FILES_TO_FIND
+                    count++;
+
+                }
+                else if(f.getName().equals(target) && count >= MAX_NUMBER_OF_FILES_TO_FIND)
+                    throw new IllegalArgumentException("Count has exceeded max allowed number");
+
+            }
+
+        }
+        //Return the String[] once finished
+    }
+
+    /**
+     * Gets the current target count for a directory search and returns it as an int
+     * */
+    public int getCount() {
+        return this.count;
+    }
+
+    /**
+     * Gets the current String[] and checks if there are actual paths inside or not
+     * */
+    public String[] getFiles() {
+        //If there is a count, then a path exists and the String[] is returned
+        if (count != 0)
+            return this.filePaths;
+        else
+            //Throws a NullPointerException as there are no files in the String[]
+        throw new NullPointerException("There are no files that have this filename");
+    }
+
+    /**
+     * Prints out the String[] from getFiles()
+     * */
+    public void printArray(){
+        //New 0 element array for a deep copy
+        String[] arr = new String[0];
+        if(getFiles() != null)
+            //If getFiles() isn't null, array is initialized to a length
+         arr = new String[getFiles().length];
+        //Copy all elements from getFiles() to arr
+        //Though we are not mutating getFiles(), this is done to ensure that
+        //no object reference problem occurs
+        for(int i = 0; i < arr.length; i++){
+            arr[i] = getFiles()[i];
+        }
+        //For each element of arr print out the path
+        for(String path : arr){
+            if(path != null)
+            System.out.println("path: " + path);
+        }
+    }
+}

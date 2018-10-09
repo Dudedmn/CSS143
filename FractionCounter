@@ -1,0 +1,46 @@
+
+/**
+ * Maintains a FractionCounter[] object which stores the count of unique fractions
+ * Constructors:
+ * FractionCounter() - Placeholder for handling misplaced calls
+ * FractionCounter(int) - Sets count to num
+ * FractionCounter(double) - Sets dCount to double
+ *
+ * Methods:
+ * compareAndIncrement - compares two Fraction objects based upon their stated numbers
+ *
+ * @author (Daniel Yan)
+ * @version (January 18th, 2018)
+ */
+public class FractionCounter {
+    private int count = 1;
+    private double dCount = 1;
+    private boolean sameFraction = true;
+    private Fraction frac;
+
+    FractionCounter(){
+
+    }
+    FractionCounter(int num){
+        this.count = num;
+    }
+
+    FractionCounter(double num){
+
+        this.dCount = num;
+    }
+
+    public boolean compareAndIncrement(FractionCounter fracCount){
+       if(this.frac.equals(fracCount.frac)) {
+           count++;
+           return true;
+       }
+       return false;
+    }
+
+
+    @Override
+    public String toString(){
+        return count + "";
+    }
+}

@@ -1,0 +1,23 @@
+/**
+ * @author Daniel Yan
+ * @date 2/13/2018
+ *
+ * Basic Exception class that extends Exception to handle LinearSearch and BinarySearch exceptions
+ * */
+public class ItemNotFoundException extends Exception {
+    /**
+     * Constructor for Exception Object
+     * */
+    public ItemNotFoundException( )
+    {
+        super( );
+    }
+
+    /**
+     * Constructor with a message
+     */
+    public ItemNotFoundException( String message )
+    {
+        super( message );
+    }
+}

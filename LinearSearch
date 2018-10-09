@@ -1,0 +1,68 @@
+/**
+ * @author Daniel Yan
+ * @date 2/13/18
+ *
+ * Methods:
+ * search(String[], String) - Iterative linear search that attempts to find a String
+ * target, returns an int if target is found or throws an ItemNotFoundException.
+ *
+ * recSearch(String[], String) - Recursive linear search that only uses recSearchHelp.
+ *
+ * recSearchHelp(String[], String, int, int) - Recursive linear search helper method
+ * that uses the two ints to define min and max of array. Returns an int if target is
+ * found, otherwise throws an ItemNotFoundException if target is not found.
+ * */
+//Uses abstract method of search and recSearch from SearchAlgorithm
+//As well as public method of incrementCount
+public class LinearSearch extends SearchAlgorithm {
+    /**
+     * Method for iterative linear search, searches each element of String[]
+     * until a matching String is found, and returns the index if true.
+     * If false, throws an ItemNotFoundException
+     * */
+    public int search(String[] arr, String target) throws ItemNotFoundException {
+        resetCount();
+        //Iterates through the entire String array to find the target
+        for (int i = 0; i < arr.length; i++) {
+            //Increment count for each comparison
+            incrementCount();
+            //If target is found return index
+            if (arr[i].equals(target)) return i;
+
+        }
+        //Target was not found
+        throw new ItemNotFoundException("Target not found");
+    }
+    /**
+     * Method for recursive linear search, simply utilizes helper method recSearchHelp
+     * */
+    public int recSearch(String[] arr, String target) throws ItemNotFoundException{
+        resetCount();
+        //Uses helper method
+        //Min is 0th element of array, max is arr.length - 1
+        return recSearchHelp(arr, target, 0, arr.length - 1);
+    }
+
+    /**
+     * Helper method for recSearch to use linear search recursively
+     * Returns index of target or throws ItemNotFoundException if target is not found
+     *
+     * The problem with this method is that it will result in a stack overflow
+     * */
+    private int recSearchHelp(String[] arr, String target, int min, int max) throws ItemNotFoundException{
+        //If min is greater max, there is no target
+        if(min > max ) throw new ItemNotFoundException("Target not found");
+        else if (arr[min].equals(target)) {
+            //Increment count for comparison
+            incrementCount();
+            //If arr[min] is target, return min
+            return min;
+        } else {
+            //Increment count for comparison
+            incrementCount();
+            //Increments min by one for each comparison if target is not found
+            return recSearchHelp(arr, target, min + 1, max);
+        }
+    }
+
+}

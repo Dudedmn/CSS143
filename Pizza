@@ -1,0 +1,362 @@
+/**
+ * Main Pizza class which constructs and maintains all aspects of a 'pizza'
+ *
+ * @author Daniel Yan
+ * @date 3/11/18
+ * */
+public class Pizza implements PizzaComparable {
+    private ArrayList<Ingredient> ingredientList = new ArrayList<Ingredient>();
+    private int pizzaCalorie = 0;
+    private Money pizzaCost = new Money(0);
+    private Shape myShape;
+    private Fraction remainingFrac = new Fraction(1, 1);
+    private Ingredient randIntgredient;
+    private double area;
+
+    /**
+     * Testing driver for Pizza
+     *
+     * @param args
+     * @return none
+     * */
+    public static void main(String[] args) {
+        int range1 = 1, range2 = 5;
+        Fraction newFrac = new Fraction(2,5);
+        Pizza a = new Pizza();
+        Pizza b = new Pizza();
+        Square square = new Square(5);
+
+        //randomRange
+        System.out.println(a.randomRange(range1,range2));
+        System.out.println(a.randomRange(range1,range2));
+        System.out.println(a.randomRange(range1,range2));
+        System.out.println(a.randomRange(range1,range2));
+        System.out.println(a.randomRange(range1,range2));
+
+        //toString
+        System.out.println(a);
+        System.out.println(b);
+
+        //compareTo
+        System.out.println("a compareTo b: " + a.compareTo(b));
+        System.out.println("a compareToBySize b: " + a.compareToBySize(b));
+        System.out.println("a compareToByCalories b: " + a.compareToByCalories(b));
+
+        //equals
+        System.out.println("a equals b? " + a.equals(b));
+
+        //Getters
+        System.out.println("Pizza a cost: " + a.getPizzaCost()
+        + "\nPizza a calorie: " + a.getPizzaCalorie()
+        + "\nPizza a area: " + a.getRemainingArea()
+        + "\nPizza a fraction: " + a.getRemainingFrac()
+        + "\nPizza a shape: " + a.getShape());
+
+        //addIngredient
+        Alfredo alf = new Alfredo();
+        a.addIngredient(alf);
+        System.out.println(a);
+
+        //eatSomePizza and setFrac
+        a.eatSomePizza(newFrac);
+        System.out.println(a);
+
+        //setShape
+        a.setShape(square);
+        System.out.println(a);
+
+    }
+
+    /**
+     * Constructor for Pizza that creates a Pizza Object with a randomized set of Ingredients and Shape.
+     *
+     * @param - none
+     * @return nothing
+     */
+    Pizza() {
+        //randomRange chooses a random int between the ranges
+        int randShape = randomRange(0, 1);
+        int randIngredient, randInt = randomRange(1, 10);
+        int numIngredients = randomRange(5, 30);
+        if (randShape == 0) {
+            myShape = new Square(randInt);
+            //Square area is just sidelength squared
+            area = Math.pow(randInt, 2);
+
+        } else if (randShape == 1) {
+            myShape = new Circle(randInt);
+            //Circle area is pi*r^2
+            area = Math.PI * Math.pow(randInt, 2);
+        }
+        //Randomizes number of ingredients
+        for (int i = 0; i <= numIngredients; i++) {
+            randIngredient = randomRange(0, 7);
+            //Switch case that adds the random ingredients
+            switch (randIngredient) {
+                case 0:
+                    Alfredo a = new Alfredo();
+                    addIngredient(a);
+                    break;
+                case 1:
+                    Goat g = new Goat();
+                    addIngredient(g);
+                    break;
+                case 2:
+                    Marinara m = new Marinara();
+                    addIngredient(m);
+                    break;
+                case 3:
+                    Mozzarella Mo = new Mozzarella();
+                    addIngredient(Mo);
+                    break;
+                case 4:
+                    Olive o = new Olive();
+                    addIngredient(o);
+                    break;
+                case 5:
+                    Pepper p = new Pepper();
+                    addIngredient(p);
+                    break;
+                case 6:
+                    Pepperoni Pe = new Pepperoni();
+                    addIngredient(Pe);
+                    break;
+                case 7:
+                    Sausage s = new Sausage();
+                    addIngredient(s);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid Ingredient index");
+            }
+        }
+
+
+    }
+
+
+
+
+    /**
+     * Randomizer method utilizing Math.random in order to choose a random int between the ranges
+     *
+     * @param min - Int that represents the minimum value for the random range
+     * @param max - Int that represents the maximum value for the random range
+     * @return int - Int value between the ranges of min and max inclusive
+     */
+    int randomRange(int min, int max) {
+        int range = (max - min) + 1;
+        return (int) (Math.random() * range) + min;
+    }
+    /**
+     * Generic compareTo method for Pizza which compares the cost for Pizza Objects
+     *
+     * @param o = Some Object to be compared with
+     * @return int - Int value 0, 1, or -1 that depicts if this Pizza Object has greater Money values than the inputted
+     * Object
+     */
+    @Override
+    public int compareTo(Object o) {
+        if (o instanceof Pizza) {
+            Pizza compare = (Pizza) o;
+            if (compare.pizzaCost.equals(this.pizzaCost)) {
+                return 0;
+            } else if (this.pizzaCost.getMoney() > compare.pizzaCost.getMoney()) {
+                return 1;
+            }
+        }
+        return -1;
+    }
+    /**
+     * compareTo method specifically to compare Pizza sizes. Using getRemainingArea() to do so
+     *
+     * @param o - Some valid Object
+     * @return int - Int value of 0,1,-1 depending on whether this Pizza Object's size is greater than inputted
+     * size or not.
+     */
+    @Override
+    public int compareToBySize(Object o) {
+        if (o instanceof Pizza) {
+            Pizza compare = (Pizza) o;
+            if (compare.getRemainingArea() == this.getRemainingArea()) {
+                return 0;
+            } else if (this.getRemainingArea() > compare.getRemainingArea()) {
+                return 1;
+            }
+        }
+        return -1;
+    }
+    /**
+     * compareTo method specifically for Pizza calories.
+     *
+     * @param o - Some valid Object
+     * @return int - Int value of 0,1,-1 depending on whether this Pizza Object has a calorie amount greater than
+     * inputted Object.
+     *
+     * This method has no real use due to calories being a primitive int, as such there is no real need for comparison
+     */
+    @Override
+    public int compareToByCalories(Object o) {
+        if (o instanceof Pizza) {
+            Pizza compare = (Pizza) o;
+            if (compare.getPizzaCalorie() == this.getPizzaCalorie()) {
+                return 0;
+            } else if (compare.getPizzaCalorie() > this.getPizzaCalorie()) {
+                return 1;
+            }
+        }
+        return -1;
+    }
+    /**
+     * Adds an Ingredient to the current pizzaArrayList and adds the total cost and calories for the added
+     * Pizza Object
+     *
+     * @param a - Some valid Ingredient
+     * @return nothing
+     */
+    void addIngredient(Ingredient a) {
+        ingredientList.insert(a.getDescription(), 0);
+        pizzaCost.add(a.getCost());
+        pizzaCalorie += a.getCalorieCount();
+    }
+
+    /**
+     * Subtracts the current remaining fraction amount from an inputted Fraction. Detects whether if the inputted
+     * Fraction is greater than the current remaining amount or not. This is a helper method for PizzaManager's
+     * eatSomePizza method.
+     *
+     * @param amt - Some Fraction Object
+     * @return nothing
+     */
+    void eatSomePizza(Fraction amt) {
+        try {
+            remainingFrac = remainingFrac.subtract(amt);
+            setFracPizza(remainingFrac);
+            if (remainingFrac.getNUMERATOR() == 0) {
+                throw new PizzaException("Pizza is now removed");
+            } else if (remainingFrac.getNUMERATOR() < 0 || remainingFrac.getDENOMINATOR() < 0) {
+                throw new ArithmeticException("Cannot have negative pizza amounts");
+            } else if (remainingFrac.getDENOMINATOR() == 0) {
+                throw new ArithmeticException("Cannot divide by 0");
+            }
+        } catch (PizzaException e) {
+
+        } catch (ArithmeticException e) {
+
+        }
+
+    }
+    /**
+     * String method that prints out the price of a pizza, calories, fraction remaining, area left, and shape of Pizza.
+     *
+     * @param - none
+     * @return String - contains all pertinent Pizza values
+     */
+    public String toString() {
+        return "Pizza has a price: " + getPizzaCost() + " and calories: " + getPizzaCalorie() + ", Fraction remaining: " + getRemainingFrac()
+                + " and area left: " + getRemainingArea() + " and shape: " + getShape();
+    }
+    /**
+     * Boolean method checking if an inputted Object is equivalent to this Pizza Object
+     *
+     * @param o - Some valid Object
+     * @return boolean - True or false value determinant whether inputted Object values are equal to this Pizza value
+     */
+    public boolean equals(Object o) {
+        if (o instanceof Pizza) {
+            Pizza compare = (Pizza) o;
+            if (compare.getPizzaCalorie() == this.getPizzaCalorie()) {
+                if (compare.getPizzaCost().equals(this.getPizzaCost())) {
+                    if (compare.getShape().equals(this.getShape())) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // Getters && Setters
+    /**
+     * Gets the remainingFraction and returns it as a new Fraction Object
+     *
+     * @param - none
+     * @return Fraction - New Fraction Object based on current remaining Fraction amounts
+     */
+    public Fraction getRemainingFrac() {
+        return new Fraction(remainingFrac.getNUMERATOR(), remainingFrac.getDENOMINATOR());
+    }
+    /**
+     * Sets the amount of remaining pizza left
+     *
+     * @param remainingFrac - Fraction Object that is to reset the current Fraction Object
+     * @return none
+     */
+    public void setRemainingFrac(Fraction remainingFrac) {
+        this.remainingFrac = new Fraction(remainingFrac.getNUMERATOR(), remainingFrac.getDENOMINATOR());
+    }
+    /**
+     * Updates the Pizza according to Fraction amount, notably cost and area.
+     *
+     * @param newFrac - Fraction Object that is the current remainingFrac
+     * @return nothing
+     */
+    public void setFracPizza(Fraction newFrac) {
+        //As numerator and denominator are ints, a double cast is needed to preserve true fractional value
+        double fracAmt = (double) newFrac.getNUMERATOR() / (double) newFrac.getDENOMINATOR();
+        int newDol = (int) (fracAmt * (double) getPizzaCost().getDollar());
+        int newCent = (int) (fracAmt * (double) getPizzaCost().getCent());
+        //New Objects are created to avoid privacy leaks
+        this.pizzaCost = new Money(newDol, newCent);
+        this.area = this.area * fracAmt;
+
+    }
+
+    /**
+     * Getter that gets pizzaCalorie
+     *
+     * @param - none
+     * @return int - Int value of pizza calorie
+     */
+    public int getPizzaCalorie() {
+        return pizzaCalorie;
+    }
+    /**
+     * Getter that gets the current price of Pizza as a Money Object
+     *
+     * @param - none
+     * @return Money - Money Object that represents the pirce value of Pizza in terms of dollars and cents
+     */
+    public Money getPizzaCost() {
+        return new Money(pizzaCost);
+    }
+
+    //Rounding method came from: https://stackoverflow.com/questions/153724/how-to-round-a-number-to-n-decimal-places-in-java
+    /**
+     * Gets the remaining area rounded to the nearest hundredth of a decimal
+     *
+     * @param - none
+     * @return double - Double value that is truncated to the 2 decimal places representing area of a Pizza Object
+     */
+    public double getRemainingArea() {
+        return Math.round(area * 100d) / 100d;
+    }
+    /**
+     * Sets the shape of a Pizza by cloning it
+     *
+     * @param s - Shape Object
+     * @return none
+     */
+    public void setShape(Shape s) {
+        myShape = (Shape) s.clone();
+    }
+    /**
+     * Gets the shape of a Pizza by cloning it
+     *
+     * @param - none
+     * @return Shape - Cloned Shape Object of current Pizza Object
+     */
+    public Shape getShape() {
+        return (Shape) myShape.clone();
+    }
+}

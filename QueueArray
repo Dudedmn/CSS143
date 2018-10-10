@@ -1,0 +1,161 @@
+/**
+ * Class: Queue
+ * Mimics an Queue by using a dynamically resizeable Object[]
+ * <p>
+ * Constructors:
+ * Queue() - Initializes Object[] to a size of 1 with an accompanying int
+ * <p>
+ * <p>
+ * Methods:
+ * increaseSize() - Increases the size of the original Object[] by 1 and copies all the values using a
+ * temporary new Object[]
+ * <p>
+ * enqueue(Object) - Inserts an Object at the first element of the Object[] and increments Object[] size
+ * by one
+ * <p>
+ * dequeue(Object) - Removes and returns the last Object for Object[], decrementing Object[] size by one
+ * <p>
+ * shiftArrayRight(int) - Shifts all elements in an Object[] to the right from the index
+ * <p>
+ * size() - Returns the size of the Object[] as an int (including nulls).
+ * <p>
+ * toString() - Prints out all non-null elements in Object[].
+ * <p>
+ * isEmpty() - Returns a boolean and checks if the Object[] is empty (skipping nulls)
+ * <p>
+ * equals(Object) - Returns a boolean and checks whether an Object is equal to this.Object[]
+ * <p>
+ * Author: Daniel Yan
+ * Date: 1/25/2018
+ */
+public class Queue {
+    public final static int INITIAL_SIZE = 1;
+    Object[] queue;
+    int queueSize;
+    static int nonNull;
+    //Initializes the Queue with a size of 1
+    Queue() {
+        queue = new Object[INITIAL_SIZE];
+        queueSize = INITIAL_SIZE;
+    }
+
+    /**
+     * Preconditions: There is an Object[]
+     * Post-conditions: Shifts all elements in the Object[] one spot to the right
+     * */
+    private void shiftArrayRight(int index) {
+        for (int i = queueSize - 2; i >= index; i--) {
+            queue[i + 1] = queue[i];
+        }
+
+    }
+
+    /**
+     * Preconditions: The Object[] is initialized
+     * Post-conditions: Copies and resets the original Object[] and increments size by 1
+     * */
+    private void increaseSize() {
+        queueSize++;
+        Object newArr[] = new Object[queueSize];
+        for (int i = 0; i < queue.length; i++) {
+            newArr[i] = queue[i];
+        }
+        queue = newArr;
+    }
+
+    /**
+     * Preconditions: An Object[] is initialized
+     * Post-conditions: Utilizes a FIFO placement method
+     * */
+    public void enqueue(Object o) {
+        //As there is an initial size of 1, the first
+        //element is simply set to the first Object
+        if (queue[0] == null) {
+            queue[0] = o;
+        } else {
+            //Increases the size of the queue and shifts all element right otherwise
+            increaseSize();
+            shiftArrayRight(0);
+            //Sets the first element to the Object
+            queue[0] = o;
+        }
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Removes an Object from the queue using FIFO
+     * */
+    public Object dequeue() {
+        //Checks to see if the queue is empty
+        if(isEmpty()) return "Queue is empty";
+        //Gets the last Object in the queue
+        Object last = queue[queueSize - 1];
+        queueSize--;
+        //Returns the last Object as it was the first inputted (FIFO)
+        return last;
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Returns the size of the queue
+     * */
+    public int size() {
+        return queueSize;
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Returns a String of the queue
+     * */
+    public String toString() {
+        //To prevent printing a null
+        if (isEmpty()) return "Queue is empty";
+        String queueString = "";
+        for (int i = queueSize - 1; i >= 0; i--) {
+            queueString += queue[i] + " ";
+        }
+        return queueString;
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Checks to see if there are any non-null elements in the queue
+     * if either the queue size is 0 or only null elements are present, queue is empty
+     * */
+    public boolean isEmpty() {
+        for (int i = 0; i < queue.length; i++) {
+            if (queue[i] != null) nonNull++;
+        }
+        if (queueSize == 0 || nonNull == 0) {
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Preconditions: Object[] is initialized
+     * Post-conditions: Checks to see if an Object[] is equivalent to this queue
+     * */
+    //Logic is equivalent to equals from ArrayList
+    public boolean equals(Object other) {
+        if(!(other instanceof Queue)) return false;
+        if (other instanceof Queue) {
+            Queue compare = (Queue) other;
+            if (compare.size() != this.size()) return false;
+            else {
+                for (int i = 0; i < compare.size(); i++) {
+                    if (compare.queue[i] != null && this.queue[i] != null) {
+                        if (compare.queue[i].getClass() != this.queue[i].getClass()) {
+                            return false;
+                        }
+
+                        if (!(compare.queue[i].equals(this.queue[i]))) {
+                            return false;
+                        }
+                    }
+                }
+
+            }
+        }
+        return true;
+    }
+}

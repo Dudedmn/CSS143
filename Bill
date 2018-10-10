@@ -1,0 +1,152 @@
+/**
+ * Creates a Bill object which uses a Date Object and Money Object
+ *
+ * Constructors:
+ * Bill(Money,Date,String) - Constructor that initializes respective fields and objects
+ * with the inputted information. Deep copy.
+ * Bill(Bill) - Copy constructor that copies the other Bill object to this Bill object
+ *
+ *
+ * Methods:
+ *
+ * Boolean:
+ * isPaid() - Checks if there is a paidDate (null or not)
+ * isValid() - Checks to see if the paidDate is valid.
+ * equals(Object) - Checks to see if the Object is a valid Bill and is equivalent in value
+ *
+ * Getter / Setters:
+ * getDueDate() - Gets the current dueDate and returns a new Date Object
+ * getOriginator() - Gets the current String originator and returns a String
+ * setPaid() - Sets the current paidDate as a new Date Object
+ * setUnpaid() - Sets the paidDate to null
+ * setDueDate() - Sets the current dueDate as a new Date Object
+ * setAmount() - Sets the current amount as a new Money object
+ * getAmount() - Gets the current amount as a new Money object and returns a Money object
+ * setOriginator() - Sets the originator to a specific String
+ *
+ * Others:
+ * toString() - Returns the Bill statement for each object and data field
+ * about Bill objects for paidDate, dueDate, amount, and originator
+ *
+ *
+ * @Author: Daniel Yan
+ * @date: 1/29/18
+ */
+public class Bill {
+
+    private Money amount;
+    private Date dueDate, paidDate;
+    private String originator;
+
+    public Bill(Money amount, Date dueDate, String originator) {
+        //New objects are created to mitigate privacy leaks
+        this.amount = new Money(amount);
+        this.dueDate = new Date(dueDate);
+        this.originator = originator;
+        this.paidDate = null;
+
+    }
+
+    public Bill(Bill toCopy) {
+        //Creates new objects to ensure proper data privacy
+        this.amount = new Money(toCopy.amount);
+        this.dueDate = new Date(toCopy.dueDate);
+        if (toCopy.paidDate != null) {
+            //If the Bill has a non null paid date this paid date is set to it
+            this.paidDate = new Date(toCopy.paidDate);
+        } else {
+            this.paidDate = null;
+        }
+        this.originator = toCopy.originator;
+
+    }
+    //Returns a new Date object for this due date
+    public Date getDueDate() {
+        return new Date(this.dueDate);
+    }
+
+    //Returns this originator as a String, no new is needed as Strings are immutable
+    public String getOriginator() {
+        return this.originator;
+    }
+
+    public boolean isPaid() {
+        if (this.paidDate != null) return true;
+        return false;
+    }
+
+    private boolean isValid(Date validDate) {
+        //Checks if the inputted date is over the due date
+        if (validDate.getDay() > dueDate.getDay() ||
+                validDate.getMonth() > dueDate.getMonth() ||
+                validDate.getYear() > dueDate.getYear()) return false;
+        //Makes sure paidDate isn't null, and checks if the inputted date is before payment date
+        else if (paidDate != null && validDate.getDay() < paidDate.getDay() ||
+                paidDate != null && validDate.getMonth() < paidDate.getMonth() ||
+                paidDate != null && validDate.getYear() < paidDate.getYear()) return false;
+        return true;
+    }
+
+    //Creates a new Date object to set this paid date to
+    public void setPaid(Date onDay) {
+        if (isValid(onDay)) {
+            this.paidDate = new Date(onDay);
+        }
+
+    }
+
+    //Sets this paid date to null
+    public void setUnpaid() {
+        this.paidDate = null;
+    }
+
+    //Creates a new Date object to set this due date to
+    public void setDueDate(Date nextDate) {
+        this.dueDate = new Date(nextDate);
+    }
+    //Creates a new Money object to set this amount to
+    public void setAmount(Money amount) {
+        this.amount = new Money(amount);
+    }
+
+    //Returns a new Money object for amount
+    public Money getAmount() {
+        return new Money(this.amount);
+    }
+
+    //Sets an inputted String to this originator, no new is necessary as Strings
+    //are immmutable
+    public void setOriginator(String originator) {
+        this.originator = originator;
+
+    }
+
+    public String toString() {
+        //Returns two different Strings depending if paid date exists
+        if (isPaid())
+            return "Amount: " + amount + "\n Due to: " + originator + "\n Is paid? " + isPaid() + "\nDate paid: " + paidDate
+                    + "\nDue date: " + dueDate;
+        //Doesn't need more info if paid date doesn't exist
+        return "Amount: " + amount + "\n Due to: " + originator + "\n Is paid? " + false;
+    }
+
+    //Checks to see if values of another object is equal to this Bill
+    public boolean equals(Object other) {
+        if (!(other instanceof Bill)) return false;
+        //Checks to see if other is an instance of Bill
+        if (other instanceof Bill) {
+            //Cast the other object to a Bill object
+            Bill compare = (Bill) other;
+            //Check if Bills are equal
+            //Equals are used for object references
+            //== are used for primitives
+            if (!compare.getAmount().equals(this.amount) || !compare.getDueDate().equals(this.dueDate)
+                    || !compare.getOriginator().equals(this.originator) || compare.isPaid() != this.isPaid())
+                return false;
+
+        }
+        return true;
+    }
+
+}
+

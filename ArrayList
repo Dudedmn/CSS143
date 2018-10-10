@@ -1,0 +1,347 @@
+import java.util.Iterator;
+
+/**
+ * Class: ArrayList
+ * Mimics an ArrayList from java.util.ArrayList by using a dynamically resizeable Object[]
+ * <p>
+ * Constructors:
+ * ArrayList() - Initializes Object[] to a size of 1 with an accompanying int
+ * <p>
+ * <p>
+ * Methods:
+ * increaseSize() - Increases the size of the original Object[] by 1 and copies all the values using a
+ * temporary new Object[]
+ * <p>
+ * insert(Object, int) - Inserts the Object at the specified index (int). Prints out a String if
+ * given index is unable to reached. Uses increaseSize() to add an element to the original Object[]
+ * <p>
+ * shiftArrayRight(int) - Shifts all elements in an Object[] to the right from the index
+ * <p>
+ * shiftArrayLeft(int) - Shifts all elements in an Object[] to the left from the index
+ * <p>
+ * remove(Object, int) - Removes and returns an Object at the index. Prints out a String if the
+ * index cannot be reached.
+ * <p>
+ * size() - Returns the size of the Object[] as an int (including nulls).
+ * <p>
+ * toString() - Prints out all non-null elements in Object[]
+ * <p>
+ * indexOf(int) - Returns the index of the Object for the Object[]. Returns the value int -1
+ * if the Object is not found
+ * <p>
+ * get(int) - Returns the Object at the specified index for Object[]. Returns the value int -1
+ * if the Object is not found
+ * <p>
+ * isEmpty() - Returns a boolean and checks if the Object[] is empty (skipping nulls)
+ * <p>
+ * equals(Object) - Returns a boolean and checks whether an Object is equal to this.Object[]
+ * <p>
+ *
+ * next() - Method for an iterator that returns the next element
+ * hasNext() - Method for an iterator that checks if there is a next element to return
+ * iterator()* - Method for Iterable implementation that uses Iterator methods to iterate through an array
+ *
+ * *I'm not sure what to do with an iterator()
+ *
+ * Author: Daniel Yan
+ * Date: 1/25/2018
+ */
+public class ArrayList<Pizza> implements Iterable{
+    public static final int STATIC_SIZE = 0;
+    private Object[] arrayL;
+    private int arraySize, current = 0;
+
+    //Initializes an Object[]
+
+    /**
+     * Constructor that initializes an Object[] in accordance to the STATIC_SIZE
+     *
+     * @param - none
+     * @return none
+     */
+    ArrayList() {
+        this.arrayL = new Object[STATIC_SIZE];
+        this.arraySize = STATIC_SIZE;
+
+    }
+    /**
+     * Private class that implements the Iterator methods for the Iterable interface
+     *
+     * Methods:
+     * next() - Checks if there is another element with hasNext() and returns that element
+     * hasNext() - Checks if there is another element in the array
+     *
+     * */
+    private class ArrayIterator implements Iterator {
+        /**
+         * Constructor that prints out the elements in arrayL in accordance to hasNext() and next()
+         *
+         * @param - none
+         * @returns nothing
+         * */
+        ArrayIterator(){
+            while(hasNext()){
+                System.out.println(next());
+            }
+        }
+        @Override
+        /**
+         * Iterator method next() that checks if there is another element with hasNext(), and if
+         * so, return that element.
+         *
+         * @param - none
+         * @return next element in array as an Object
+         * */
+        public Object next() {
+            if (!hasNext()) {
+                throw new IllegalArgumentException("No present next element");
+            }
+            return arrayL[current++];
+        }
+
+        /**
+         * Iterator method that checks if there is a next element in the array, utilizing
+         * a counter current.
+         *
+         * @param - none
+         * @return boolean value, true if current is less than arraySize or false otherwise
+         */
+        public boolean hasNext() {
+            if (current < arraySize) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     *  Iterable method that makes an iterator
+     *
+     *  @param - none
+     *  @return Iterator with the methods of an Iterator
+     * */
+    public Iterator iterator() {
+       return new ArrayIterator();
+    }
+
+    /**
+     * Preconditions: The Object[] is initialized, and the insert() method is called
+     * Post-conditions: Increments the Object[] array size by 1 by creating a new one, and creates a copy array
+     * to correct set the values of the new Object[]
+     *
+     * @param - nothing
+     * @return nothing
+     */
+    private void increaseSize() {
+        arraySize++;
+        Object newArr[] = new Object[arraySize];
+        for (int i = 0; i < arrayL.length; i++) {
+            newArr[i] = arrayL[i];
+        }
+        arrayL = newArr;
+    }
+
+    /**
+     * Preconditions: The Object[] has been initialized
+     * Post-conditions: An Object is inserted at a valid index
+     *
+     * @param item  - Object value
+     * @param index - int value
+     * @return nothing
+     */
+    public void insert(Object item, int index) {
+        //If the index is greater than the array size, the array will expand to that new size
+        if (index >= arraySize) {
+            for (int i = index - arraySize; i >= 0; i--) {
+                increaseSize();
+            }
+            arrayL[index] = item;
+            //If index is under 0, that is invalid
+        } else if (index < 0) {
+            System.out.println("Index cannot be lower than 0");
+            return;
+        } else {
+            //All current elements in the array is shifted right
+            shiftArrayRight(index);
+            //The Object[] is incremented by one
+            increaseSize();
+            //The index of the array that is selected now hold the specified Object
+            arrayL[index] = item;
+        }
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Shifts all elements in the array to the right by 1
+     *
+     * @param index - int value
+     * @return nothing
+     */
+    private void shiftArrayRight(int index) {
+        //This is an exception case, where the index > greater than arraysize - 2
+        //and the index is positive, as such in the normal loop, this index is skipped
+        //To remedy this, the Object[] is first incremented then the last 2 values are shifted
+        if (index > arraySize - 2 && index > 0) {
+            increaseSize();
+            arrayL[arraySize - 1] = arrayL[arraySize - 2];
+        }
+        //Arraysize is decremented by 2 because the arraysize = Object[].length
+        //And needs to decremented twice to allow i+1
+        for (int i = arraySize - 2; i >= index; i--) {
+            arrayL[i + 1] = arrayL[i];
+        }
+
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Shifts all elements in the array left once
+     *
+     * @param index - int value
+     * @return nothing
+     */
+    //Primarily used for the remove method
+    private void shiftArrayLeft(int index) {
+        for (int i = index; i < arraySize - 1; i++) {
+            arrayL[i] = arrayL[i + 1];
+        }
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Returns arraysize
+     *
+     * @param - nothing
+     * @return arraySize of current array
+     */
+    public int size() {
+        return arraySize;
+    }
+
+    /**
+     * Preconditions: Assumes there is an element that is specified for the index
+     * Post-conditions: Removes the element at the index and shifts all elements
+     * in the array once left
+     *
+     * @param index - int value in the array
+     * @return Object that is removed in the index
+     */
+    public Object remove(int index) {
+        //Checks to see if index is valid
+        if (index > arraySize || index < 0) {
+            System.out.println("Invalid index removal. Returning null");
+            return null;
+        } else {
+            //Sets an object equal to the value of the index to be returned
+            Object oldVal = arrayL[index];
+            shiftArrayLeft(index);
+            arraySize--;
+            return oldVal;
+        }
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Returns a String composed of all non-null elements
+     *
+     * @param - nothing
+     * @return String value that lists all values in the array
+     */
+    public String toString() {
+        String arrayString = "";
+        for (Object o : arrayL) {
+            if (o != null)
+                arrayString += o + " ";
+        }
+        return arrayString;
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Checks to see if the array is empty of non-null elements
+     *
+     * @param - nothing
+     * @return boolean value to test if array is empty or not.
+     */
+    public boolean isEmpty() {
+        boolean emptyArray = false;
+        for (int i = 0; i < arraySize; i++) {
+            if (arrayL[i] == null) emptyArray = true;
+            else if (arrayL[i] != null) {
+                break;
+            }
+        }
+        return emptyArray;
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Returns the object at the specified index if found
+     *
+     * @param o - Object that has some value
+     * @return Either the index of the Object found or -1 if not found.
+     */
+    public int indexOf(Object o) {
+        for (int i = 0; i < arrayL.length; i++) {
+            if (arrayL[i] == o) return i;
+        }
+        System.out.println("Object cannot be found");
+        return -1;
+    }
+
+    /**
+     * Preconditions: Another Object[] inputted
+     * Post-conditions: Checks to see if the Object[] is equal to this.Object[] (arrayL)
+     *
+     * @param other - Object that has some value
+     * @return boolean value whether the Object is equal to the current Object array
+     */
+    //This equals logic is the same for Stack and Queue
+    public boolean equals(Object other) {
+        if (!(other instanceof ArrayList)) return false;
+        //Checks to see if other is an instance of ArrayList
+        if (other instanceof ArrayList) {
+            //ArrayList object compare now has the value of other casted to ArrayList
+            ArrayList compare = (ArrayList) other;
+            //Check if the sizes are teh same
+            if (compare.size() != this.size()) return false;
+            else {
+                //Loops through each element of both arrays
+                for (int i = 0; i < compare.size(); i++) {
+                    //If elements are null, ignore and skip
+                    if (compare.arrayL[i] != null && this.arrayL[i] != null) {
+                        //If Objects are not of the same class type, return false
+                        if (compare.arrayL[i].getClass() != this.arrayL[i].getClass()) {
+                            return false;
+                        }
+                        //If object values are not equal, return false
+                        if (!(compare.arrayL[i].equals(this.arrayL[i]))) {
+                            return false;
+                        }
+                    }
+                }
+
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Gets the Object at the index
+     *
+     * @param index - int value in the array
+     * @return Object located at that index
+     */
+    public Object get(int index) {
+        if (index > arraySize || index < 0) {
+            System.out.println("Element cannot be found");
+            return -1;
+        }
+        return arrayL[index];
+    }
+
+
+}

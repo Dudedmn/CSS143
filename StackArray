@@ -1,0 +1,170 @@
+/**
+ * Class: Stack
+ * Mimics an Stack by using a dynamically resizeable Object[]
+ * <p>
+ * Constructors:
+ * Stack() - Initializes Object[] to a size of 1 with an accompanying int
+ * <p>
+ * <p>
+ * Methods:
+ * increaseSize() - Increases the size of the original Object[] by 1 and copies all the values using a
+ * temporary new Object[]
+ * <p>
+ * push(Object) - Inserts an Object at the last element of the Object[] and increments Object[] size
+ * by one
+ * <p>
+ * pop(Object) - Removes and returns the last Object for Object[], decrementing Object[] size by one
+ * <p>
+ * shiftArrayLeft(int) - Shifts all elements in an Object[] to the left from the index
+ * <p>
+ * size() - Returns the size of the Object[] as an int (including nulls).
+ * <p>
+ * toString() - Prints out all non-null elements in Object[].
+ * <p>
+ * isEmpty() - Returns a boolean and checks if the Object[] is empty (skipping nulls)
+ * <p>
+ * equals(Object) - Returns a boolean and checks whether an Object is equal to this.Object[]
+ * <p>
+ * Author: Daniel Yan
+ * Date: 1/25/2018
+ */
+
+
+public class Stack {
+    public static final int INITIAL_SIZE = 1;
+    Object[] stack;
+    private int stackSize;
+    private static int noNull;
+
+    //Initializes an Object[] to a size of 1
+    Stack() {
+        stack = new Object[INITIAL_SIZE];
+        stackSize = INITIAL_SIZE;
+    }
+
+    /**
+     * Preconditions: The Object[] is initialized
+     * Post-conditions: Copies and resets the Object[] then increments the size by 1
+     * */
+    private void increaseSize() {
+        stackSize++;
+        Object newArr[] = new Object[stackSize];
+        for (int i = 0; i < stackSize - 1; i++) {
+            newArr[i] = stack[i];
+        }
+        stack = newArr;
+
+    }
+
+    /**
+     * Preconditions: Initialized Object[]
+     * Post-conditions: Shift all elements in the stack one to the left
+     * */
+    public void shiftArrayLeft(int index) {
+        for (int i = index; i < stackSize - 1; i++) {
+            stack[i] = stack[i + 1];
+        }
+    }
+
+    /**
+     * Preconditions: Initialized Object[]
+     * Post-conditions: Adds one item to the stack using FILO
+     * */
+    public void push(Object o) {
+        //For the first push, the first element is the Object
+        if (stackSize == 1 && stack[0] == null) {
+            stack[0] = o;
+            increaseSize();
+        } else {
+            //After the first element, the Object[] is shifted left once
+            shiftArrayLeft(stackSize - 1);
+            //The last element is set to the new Object
+            stack[stackSize - 1] = o;
+            increaseSize();
+
+        }
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Returns the last element of the Object[] (top of stack)
+     * */
+    public Object pop() {
+        if (isEmpty()) return ("Stack is empty");
+        //If the last element is a null, the stack is trimmed
+        if (stack[stackSize - 1] == null) {
+            stackSize--;
+        }
+        //Sets the last element to the Object newItem
+        Object newItem = stack[stackSize - 1];
+        stackSize--;
+        //Returns the last element
+        return newItem;
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Returns the size of the stack
+     * */
+    public int size() {
+        return stackSize;
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Returns a String of non-null elements
+     * */
+    public String toString() {
+        //To prevent printing a null
+        if (isEmpty()) return "Stack is empty";
+        String stackElement = "";
+        for (int i = stackSize - 2; i >= 0; i--) {
+            if (stack[i] != null)
+            stackElement += stack[i] + " ";
+        }
+        return stackElement;
+    }
+
+    /**
+     * Preconditions: None
+     * Post-conditions: Returns a boolean. Checks to see if the stack has no non-null elements
+     * or if the stackSize = 0.
+     * */
+    public boolean isEmpty() {
+        for (int i = 0; i < stack.length; i++) {
+            if (stack[i] != null) noNull++;
+        }
+        if (stackSize == 0 || noNull == 0) return true;
+        return false;
+    }
+
+    /**
+     * Preconditions: An Object[] initialized
+     * Post-conditions: Checks to see if the Object[] is equivalent to the stack
+     * */
+    //Logic is equivalent to equals from ArrayList
+    public boolean equals(Object other) {
+        if(!(other instanceof Stack)) return false;
+        if (other instanceof Stack) {
+            Stack compare = (Stack) other;
+            if (compare.size() != this.size()) return false;
+            else {
+                for (int i = 0; i < compare.size(); i++) {
+                    if (compare.stack[i] != null && this.stack[i] != null) {
+                        if (compare.stack[i].getClass() != this.stack[i].getClass()) {
+                            return false;
+                        }
+
+                        if (!(compare.stack[i].equals(this.stack[i]))) {
+                            return false;
+                        }
+                    }
+                }
+
+            }
+        }
+        return true;
+    }
+
+}
+

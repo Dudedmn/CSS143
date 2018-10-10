@@ -3,18 +3,16 @@ Java code for CSS143 course
 
 Projects contained in this file:
 
-*Pizza Simulator*
+*Pizza Simulator* - Final Project that teaches inheiritance and combines all prior class utilization.
 
-*LinkedLists*
+*LinkedLists* - Introduction to Linked List data structures in Java.
 
-*Recursion*
+*Recursion* - Recursive file searching, Binary Searching, and Linear Searching
 
-*Sorts*
+*Sorts* - Basic sorting algorithms implemented in Java (Bubble, Insertion, and Selection)
 
-*Fractions*
+*Fractions* - String parsing and simple introduction to recursion.
 
-*Classes and Interfaces*
+*Classes and Privacy Leaks* - Classes with private variables and different scopes.
 
-*Classes and Privacy Leaks*
-
-*Data Structures*
+*Data Structures* - ArrayList, Queue, and Stack implemented using dynamically allocated arrays.

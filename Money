@@ -1,0 +1,151 @@
+/**
+ * Creates a Money
+ * <p>
+ * Constructors:
+ * Money(int) - Initializes a Money object for dollars, checks if amount is valid
+ * Money(int, int) - Initializes a Money object for dollars and cents, and checks
+ * if either ints are valid or not
+ * <p>
+ * Methods:
+ * <p>
+ * Boolean:
+ * isValid() - Checks to see if the Money inputted is valid
+ * equals(Object) - Checks to see if the value of another Object is equal to this Money object
+ * <p>
+ * Getters / Setters
+ * getDollar() - Gets the current dollar amount and returns an int
+ * getCent() - Gets the current cent amount and returns an int
+ * setDollar() - Sets the current dollar amount as an int
+ * setCent() - Sets teh current cent amount as an int
+ * getMoney() - Gets the current Money amount as a new Money object and returns a double
+ * setMoney() - Sets the current Money amount as a new Money object
+ *
+ * <p>
+ * Others:
+ * add(int) - Checks to see if inputted int is valid (where current dollar will not be negative)
+ * and adds the amount to current dollar if valid
+ * add(int, int) - Checks to see if both inputted ints are valid, and if cents is greater than
+ * 99, it adds or subtracts another dollar that is then checked for validity
+ * add(Money) - Uses other two add methods to add values from a Money object
+ * toString() = Returns the current Money amount in $dollar.cent format
+ *
+ * @Author: Daniel Yan
+ * @date: 1/29/18
+ */
+public class Money {
+    private int dollar, cent;
+
+    //As these are primitive fields, no new Object needs to be created
+    public Money(int dollar) {
+        if (dollar > -1)
+            this.dollar = dollar;
+    }
+
+    public Money(int dollar, int cent) {
+        if (isValid(dollar, cent)) {
+            this.dollar = dollar;
+            this.cent = cent;
+        }
+    }
+
+    public Money(Money other) {
+        if (isValid(other.dollar, other.cent)) {
+            this.dollar = other.dollar;
+            this.cent = other.cent;
+        }
+    }
+
+
+    private boolean isValid(int dollar, int cent) {
+        if (dollar < 0 || cent > 99 || cent < 0) return false;
+        return true;
+    }
+
+    public int getDollar() {
+        return this.dollar;
+    }
+
+    public int getCent() {
+        return this.cent;
+    }
+
+    public void setDollar(int dollar) {
+        if (dollar > -1)
+            this.dollar = dollar;
+    }
+
+    public void setCent(int cent) {
+        if (cent > -1 && cent < 100)
+            this.cent = cent;
+    }
+
+    public double getMoney() {
+        return this.dollar + (double) this.cent / 100;
+
+    }
+
+    public void setMoney(int dollar, int cent) {
+        if (isValid(dollar, cent)) {
+            this.dollar = dollar;
+            this.cent = cent;
+        }
+    }
+
+    public void add(int dollar) {
+        int result = this.dollar + dollar;
+        if (result > -1) this.dollar = result;
+    }
+
+    public void add(int dollar, int cent) {
+        //Prevents a dollar and cent input with differing signage
+        if ((dollar * cent) < 0) return;
+        else {
+            int newDol = this.dollar + dollar;
+            int newCent = this.cent + cent;
+            //Checks if the new dollar amount is negative or if the
+            //cents are negative and subtracted amount is not greater than
+            //total dollar amount
+            if (newDol < 0 || newDol + newCent < 0) return;
+                //If total cent is under 0 then it subtracts it from dollars
+            else if (newCent > 99 || newCent < 0) {
+                int addDollar = newCent / 100;
+                double centRemainder = 100 * (((double) newCent / 100) - addDollar);
+                //Rounds double centRemainder to nearest double (tenth decimal)
+                centRemainder = Math.round((centRemainder));
+                this.dollar = (newDol + addDollar);
+                //Given cent cannot be negative
+                this.cent = Math.abs((int) centRemainder);
+            } else {
+                this.dollar += dollar;
+                this.cent += cent;
+            }
+        }
+    }
+
+    public void add(Money other) {
+        //Simply uses the other add methods to do the work
+        if (other.getCent() != 0) {
+            add(other.dollar, other.cent);
+        } else {
+            add(other.dollar);
+        }
+    }
+
+    public boolean equals(Object other) {
+        if (!(other instanceof Money)) return false;
+        //Checks to see if other is an instance of Money
+        if (other instanceof Money) {
+            //Cast the other object to a money object
+            Money compare = (Money) other;
+            //Check dollar amounts and cent amounts are equal
+            if (compare.dollar != this.dollar || compare.cent != this.cent) return false;
+
+        }
+        return true;
+    }
+
+    public String toString() {
+        return "$" + this.dollar + "." + this.cent;
+    }
+
+}

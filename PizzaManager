@@ -1,0 +1,357 @@
+import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
+/**
+ * PizzaManager Skeleton File
+ * CSS 162, Final Project
+ * <p>
+ * This class is a starting point for your final project and is incomplete.
+ * Note that if there are any inconsistencies between this skeleton and
+ * the assignment description, the assignment description controls.
+ * <p>
+ * Author: Rob Nash with edits by Johnny Lin
+ *
+ * @author Daniel Yan - Added all necessary methods and provided a more extensive driver
+ * @date 3/11/18
+ */
+public class PizzaManager {
+    ArrayList<Pizza> pizzaArrayList = new ArrayList<Pizza>();
+
+
+    /**
+     * The console interface is defined in the start method
+     * You can exit or extend the code below to accomplish all of
+     * the outcomes defined in the homework document
+     */
+    public void start() {
+        char selection;
+
+        Scanner scan = new Scanner(System.in);
+        while (true) {
+            displayAllPizzas();
+            displayInstructions();
+            //This selects a String but only the first char, for an invalid input the default switch case is used
+            selection = scan.nextLine().charAt(0);
+
+
+            switch (selection) {
+                case 'A':
+                case 'a':
+                    System.out.println("Adding a random pizza to the ArrayList<Pizza>.");
+                    addRandomPizza();
+                    break;
+                case 'H':
+                case 'h':
+                    //Only need to use a for loop to add a hundred pizzas
+                    System.out.println("Adding one hundred random pizzas to the ArrayList<Pizza>.");
+                    for (int i = 0; i < 100; i++) {
+                        addRandomPizza();
+                    }
+                    break;
+                case 'E':
+                case 'e':
+                    eatSomePizza(scan);
+                    break;
+                case 'P':
+                case 'p':
+                    System.out.println("Sorting pizzas by (P)rice");
+                    sortByPrice();
+                    break;
+                case 'S':
+                case 's':
+                    System.out.println("Sorting pizzas by (S)ize");
+                    sortBySize();
+                    break;
+                case 'C':
+                case 'c':
+                    System.out.println("Sorting pizzas by (C)alories");
+                    sortByCalories();
+                    break;
+                case 'B':
+                case 'b':
+                    //Try catch to handle exceptions for binary searches
+                    System.out.println("(B)inary search over pizzas by calories(int).  Sorting first.  What calorie count are you looking for?");
+                    int calScan = 0;
+                    try {
+                        calScan = scan.nextInt();
+                    } catch (InputMismatchException e) {
+                        throw new InputMismatchException("Enter a valid input");
+                    }
+                    //Scanner buffering
+                    scan.nextLine();
+                    int search = binarySearchByCalories(calScan);
+                    if (search < 0)
+                        System.out.println("Not found");
+                    else
+                        System.out.println("Found at index: " + search);
+                    break;
+                case 'Q':
+                case 'q':
+                    System.out.println("(Q)uitting!");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Unrecognized input - try again");
+                    break;
+            }
+        }
+
+    }
+
+    /**
+     * 'eats' some of the Pizza by taking an inputted String and making it into a Fraction Object which then
+     * subtracts the current Fraction Object by the eaten Fraction amount. If remaining fraction is equal to
+     * 0 then Pizza is removed, otherwise either an exception is thrown for having a negative amount of Pizza
+     * or current remaining fraction amount is updated.
+     *
+     * @param scan - Scanner that picks up a presumably valid String fraction
+     * @return nothing
+     */
+    private void eatSomePizza(Scanner scan) {
+        System.out.println("Eating a fraction of a pizza. How much? (a/b)");
+        String split = scan.nextLine();
+        //Splits the String by '/'
+        Scanner scanTwo = new Scanner(split).useDelimiter("/");
+        int index = 0;
+        Fraction subFrac;
+        try {
+            int num = scanTwo.nextInt();
+            int dNum = scanTwo.nextInt();
+            subFrac = new Fraction(num, dNum);
+            System.out.println("At which index?");
+            index = scan.nextInt();
+            //Scanner buffering
+            scan.nextLine();
+        } catch (InputMismatchException e) {
+            throw new InputMismatchException("Invalid input");
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("Invalid input");
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Attempted to access a null value");
+        }
+        System.out.println("Index: " + index);
+        //Checks for a valid index to search for
+        if (index >= pizzaArrayList.size() || index < 0) {
+            while (index >= pizzaArrayList.size() || index < 0) {
+                try {
+                    System.out.println("Please enter a valid index");
+                    index = scan.nextInt();
+                } catch (InputMismatchException e) {
+                    //Checks to see if a valid character is placed
+                    throw new InputMismatchException("Cannot have an invalid character");
+
+                }
+            }
+        }
+        //Placeholder Pizza Object to get values
+        Pizza somePizza = (Pizza) pizzaArrayList.get(index);
+        try {
+            //Attempts to subtract the new Fraction Object
+            somePizza.eatSomePizza(subFrac);
+            //Checks each condition that can result from having a new Fraction
+            if (somePizza.getRemainingFrac().getNUMERATOR() == 0) {
+                System.out.println("Removing pizza at index: " + index);
+                throw new PizzaException("Pizza is now removed");
+            } else if (somePizza.getRemainingFrac().getNUMERATOR() < 0 || somePizza.getRemainingFrac().getDENOMINATOR() < 0) {
+                throw new ArithmeticException("Cannot have negative pizza amounts");
+            } else if (somePizza.getRemainingFrac().getDENOMINATOR() == 0) {
+                throw new ArithmeticException("Cannot divide by 0");
+            }
+        } catch (PizzaException e) {
+            //If PizzaException is thrown remove the pizza
+            pizzaArrayList.remove(index);
+        } catch (ArithmeticException e) {
+            //Print a message to console and throw an error
+            System.out.println("Cannot eat more than remaining pizza amount");
+        }
+
+    }
+
+    /**
+     * Adds a random Pizza Object. Uses default constructor which already adds a random Pizza.
+     *
+     * @param - none
+     * @return none
+     */
+    private void addRandomPizza() {
+        Pizza randPizza = new Pizza();
+        //Insert at index 0 acts as a .add method
+        pizzaArrayList.insert(randPizza, 0);
+    }
+
+    /**
+     * Displays all current Pizza Objects in pizzaArrayList
+     *
+     * @param - none
+     * @return none
+     */
+    private void displayAllPizzas() {
+        for (int i = 0; i < pizzaArrayList.size(); i++) {
+            if (pizzaArrayList.get(i) != null)
+                System.out.println(pizzaArrayList.get(i));
+        }
+    }
+
+    /**
+     * Sorts the Pizza price from greatest to least using Selection Sort
+     *
+     * @param - none
+     * @return none
+     */
+    private void sortByPrice() {
+        //pizzaArrayList has a singular null value at the end
+        int n = pizzaArrayList.size() - 1;
+        //Sorts the list multiple times
+        for (int m = 0; m < n; m++) {
+            // Moves the unsorted part of the array
+            for (int i = 0; i < n - 1; i++) {
+                // Find the maximum element in unsorted array
+                int maxIndex = i;
+                //Placeholder Pizza Object to get the actual Pizza Object value
+                Pizza minPizza = (Pizza) pizzaArrayList.get(maxIndex);
+                for (int j = i + 1; j < n; j++) {
+                    //Second placeholder Pizza Object for index j
+                    Pizza jPizza = (Pizza) pizzaArrayList.get(j);
+                    //Sorts from greatest to least
+                    if (jPizza.getPizzaCost().compareTo(minPizza.getPizzaCost()) > 0) {
+                        maxIndex = j;
+                        //Swaps the index values
+                        pizzaArrayList.swap(i, maxIndex);
+                    }
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Sorts the Pizza Size from greatest to least using Selection Sort
+     * Logic and algorithms are directly copied from sortByPrice
+     *
+     * @param - none
+     * @return none
+     */
+    private void sortBySize() {
+        //pizzaArrayList has a singular null value at the end
+        int n = pizzaArrayList.size() - 1;
+        //Sorts the list multiple times
+        for (int m = 0; m < n; m++) {
+            // Moves the unsorted part of the array
+            for (int i = 0; i < n - 1; i++) {
+                // Find the maximum element in unsorted array
+                int maxIndex = i;
+                //Placeholder Pizza Object to get the actual Pizza Object value
+                Pizza minPizza = (Pizza) pizzaArrayList.get(maxIndex);
+                for (int j = i + 1; j < n; j++) {
+                    //Second placeholder Pizza Object for index j
+                    Pizza jPizza = (Pizza) pizzaArrayList.get(j);
+                    if (jPizza.compareToBySize(minPizza) > 0) {
+                        maxIndex = j;
+                        //Swaps the index values
+                        pizzaArrayList.swap(i, maxIndex);
+                    }
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Sorts the Pizza by calories using insertion sort. As pizza calories are ints, no compareTo method is needed.
+     *
+     * @param - none
+     * @return none
+     */
+    private void sortByCalories() {
+        //Temporary Object for swapping
+        Object temp;
+        //Two pizza Objects to get the pizza Calorie values
+        Pizza jPizza, jPizzaMinusOne;
+        for (int i = 1; i < pizzaArrayList.size() - 1; i++) {
+            for (int j = i; j > 0; j--) {
+                //Sets the Pizza placeholder Objects to the actual values
+                jPizza = (Pizza) pizzaArrayList.get(j);
+                jPizzaMinusOne = (Pizza) pizzaArrayList.get(j - 1);
+                if (jPizza.getPizzaCalorie() > jPizzaMinusOne.getPizzaCalorie()) {
+                    //Array value is directly used to change the actual index values
+                    temp = pizzaArrayList.arrayL[j];
+                    pizzaArrayList.arrayL[j] = pizzaArrayList.arrayL[j - 1];
+                    pizzaArrayList.arrayL[j - 1] = temp;
+                }
+            }
+        }
+    }
+
+    /**
+     * Sorts the pizzaArrayList using the calorie sort and then uses binary search to locate an inputted calorie.
+     *
+     * @param cals - Valid int value
+     * @return int - index of the Pizza with calorie amount if found, -1 if not found
+     */
+    private int binarySearchByCalories(int cals) {
+        //Sorts the pizzaArrayList first by calories
+        sortByCalories();
+        //Pizza placeholder value to get actual calorie value
+        Pizza calPiz;
+        //Int[] is created here to have all pizza calorie values
+        int[] calArr = new int[pizzaArrayList.size() - 1];
+        for (int i = 0; i < calArr.length; i++) {
+            calPiz = (Pizza) pizzaArrayList.get(i);
+            calArr[i] = calPiz.getPizzaCalorie();
+        }
+
+        int start = 0;
+        //end can't be .length as OOB would occur
+        int end = calArr.length - 1;
+
+        //As long as start is less than or equal to end, keep checking middle
+        while (start <= end) {
+            //Locates the middle of the array
+            int middle = (start + end) / 2;
+            //Checks value of the array, as it's sorted greatest to least, it's greater than
+            if (cals > calArr[middle]) {
+                //End is decreased by one as calorie is on the left side then
+                end = middle - 1;
+            }
+
+            if (cals < calArr[middle]) {
+                //Start is incremented by one as calorie is on the right side then
+                start = middle + 1;
+            }
+
+            if (cals == calArr[middle]) {
+                //If calorie is equal return it
+                return middle;
+            }
+
+        }
+        //Calorie value was not found
+        return -1;
+    }
+
+    /**
+     * No need to edit functions below this line, unless extending the menu or
+     * changing the instructions
+     */
+    private static final String instructions = "-----------------------\nWelcome to PizzaManager\n-----------------------\n(A)dd a random pizza\nAdd a (H)undred random pizzas\n(E)at a fraction of a pizza\nSort pizzas by (P)rice\nSort pizzas by (S)ize\nSort pizzas by (C)alories\n(B)inary Search pizzas by calories\n(Q)uit\n";
+    /**
+     * displays the instructions for the pizza menu
+     *
+     * @param - none
+     * @return none
+     * */
+    private void displayInstructions() {
+        System.out.println(instructions);
+    }
+
+    /**
+     * Notice the one-line main function.
+     *
+     * @param args
+     * @return
+     */
+    public static void main(String[] args) {
+        new PizzaManager().start();
+    }
+}

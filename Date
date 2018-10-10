@@ -1,0 +1,106 @@
+/**
+ * Creates a Date Object following the MM/DD/YY format
+ *
+ * Constructors:
+ * Date(int,int,int) - Initializes a new Date object with valid month, day, and year
+ * Date(Date) - Initializes a Date object to the values of another Date object
+ *
+ * Methods:
+ *
+ * Boolean:
+ * isValid() - Checks to see if the inputted month, day, year values are valid
+ * equals(Object) - Checks to see if an object has the same values as this Date object
+ *
+ * Getters / Setters:
+ * getMonth() - Gets the current month and returns an int
+ * getDay() -  Gets the current day and returns an int
+ * getYear() -  Gets the current year and returns an int
+ * setMonth() -  Sets the current month as an int
+ * setDay() - Sets the current day as an int
+ * setYear() - Sets the current year and returns an int
+
+ *
+ * Others:
+ * toString() - Returns the month, day, and year in a "MM/DD/YY" format
+ *
+ * @Author: Daniel Yan
+ * @date: 1/29/18
+ */
+
+public class Date {
+
+    private int month, day, year;
+
+    Date(int month, int day, int year) {
+        //As these are all primitive fields, no new Object needs to be created
+        if (isValid(month, day, year)) {
+            this.month = month;
+            this.day = day;
+            this.year = year;
+        }
+    }
+
+    Date(Date other) {
+        if (isValid(other.month, other.day, other.year)) {
+            this.month = other.month;
+            this.day = other.day;
+            this.year = other.year;
+        }
+    }
+
+    //Checks to see the valid ranges of each input
+    private boolean isValid(int month, int day, int year) {
+        if (month > 12 || month < 1 &&
+                day > 31 || day < 1 &&
+                year > 2024 || year < 2001)
+            return false;
+        return true;
+    }
+
+    public int getMonth() {
+        return this.month;
+    }
+
+    public int getDay() {
+        return this.day;
+    }
+
+    public int getYear() {
+        return this.year;
+    }
+
+    public void setMonth(int month) {
+        if (month > 0 && month < 13)
+            this.month = month;
+    }
+
+    public void setDay(int day) {
+        if (day > 0 && day < 32)
+            this.day = day;
+    }
+
+    public void setYear(int year) {
+        if (year > 2000 && year < 2025)
+            this.year = year;
+    }
+
+    public String toString() {
+        //prints a mm/day/year format
+        return month + "/" + day + "/" + year;
+    }
+
+    public boolean equals(Object other) {
+        if (!(other instanceof Date)) return false;
+        //Checks to see if other is an instance of Date
+        if (other instanceof Date) {
+            //Cast the other object to a Date object
+            Date compare = (Date) other;
+            //Check if Date values are equal
+            if (compare.month != this.month || compare.day != this.day
+                    || compare.year != this.year) return false;
+
+        }
+        return true;
+    }
+
+}

@@ -7,7 +7,7 @@ Projects contained in this file:
 
 *LinkedLists* - Introduction to Linked List data structures in Java.
 
-*Recursion* - Recursive file searching, Binary Searching, and Linear Searching
+*Searching* - Recursive file searching, Binary Searching, and Linear Searching
 
 *Sorts* - Basic sorting algorithms implemented in Java (Bubble, Insertion, and Selection)
 

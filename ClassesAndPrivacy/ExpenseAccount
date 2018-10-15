@@ -1,0 +1,164 @@
+/**
+ * Given the following definition of an ExpenseAccount:
+ * <p>
+ * "An arrangement under which sums of money spent in the course of business by an employee
+ * are later reimbursed by their employer."
+ * <p>
+ * As such it's an account that is used by employees to cover work-related fees, or
+ * an account used to log everyday spending for a business.
+ * <p>
+ * Condition of these accounts are they are temporary, and must be zeroed out at the
+ * end of a Fiscal Year. For simplicity sake, Fiscal Years for this business will abide by
+ * the Calendar Year format and schedules.
+ *
+ * A predetermined hard limit on the amount of money for an ExpenseAccount
+ * is also placed.
+ * <p>
+ * Methods:
+ * currentExpense() - Tracks the current expense or the amount used of the expense account.
+ * remainingExpense() - Tracks the remaining amount left in the expense account.
+ * validDate(Date) - Checks if the Date inputted is valid for fiscal date.
+ * resetDate() - In the case the date is invalid, the ExpenseAccount is reset.
+ * expend(int, int) - Expends or uses the funds within the ExpenseAccount.
+ * addBill(Bill, Date) - Pays a Bill Object with the ExpenseAccount funds
+ * numBillPaid() - Returns the number of Bills paid.
+ * @author Daniel Yan
+ * @date 3/1/2018
+ */
+public class ExpenseAccount extends ArrayList {
+    //Maximumm allowed amount of money in an ExpenseAccount
+    public final static double ALLOWED_EXPENSE = 5000;
+    private Date fiscalEnd;
+    private Money amount, initialAmount;
+    private double expense = 0;
+    private int billCount = 0;
+
+    /**
+     * Constructor that initializes an ExpenseAccount with a Date Object and Money amount
+     *
+     * @param - none
+     * @return none
+     * <p>
+     * Date is defining the fiscal year end of the ExpenseAccount, and the Money Object determines
+     * the amount of Money placed within the account.
+     */
+    ExpenseAccount(Date fiscalEnd, Money amount) throws CloneNotSupportedException {
+        this.fiscalEnd = (Date) fiscalEnd.clone();
+        //Checks if the amount inputted is greater than allowed amount
+        if (amount.getMoney() < ALLOWED_EXPENSE) {
+            this.amount = (Money) amount.clone();
+            //Initial amount is here to keep track of the first amount of money given
+            this.initialAmount = (Money) amount.clone();
+        } else throw new IllegalArgumentException("Amount cannot exceed expense limit for an Expense Account");
+    }
+
+    /**
+     * Method that returns the current amount spent
+     *
+     * @param - none
+     * @return double that is the amount of Money expended
+     */
+    public double currentExpense() {
+        return expense;
+    }
+
+    /**
+     * Method that calculates the remaining amount of funds in the account
+     *
+     * @param - none
+     * @return double that is the remaining total
+     */
+    public double remainingExpense() {
+        return this.initialAmount.getMoney() - currentExpense();
+    }
+
+    /**
+     * boolean method that checks if some input date is valid or not
+     *
+     * @param someDate - Date Object
+     * @return boolean value true or false dependent on compared date
+     */
+    public boolean validDate(Date someDate) {
+        //compareTo method for Date Class is used here which checks if someDate
+        //is greater in terms of Date than fiscalEnd
+        if (someDate.compareTo(fiscalEnd) >= 0) return false;
+        return true;
+    }
+
+    /**
+     * Method that resets the amount of money in an ExpenseAccount if the
+     * inputted date is greater than fiscalDate. Otherwise, a message
+     * is printed out on how the Date is still valid.
+     *
+     * @param someDate - Date Object that is inputted
+     * @return nothing
+     */
+    public void resetDate(Date someDate) {
+        if (!validDate(someDate)) {
+            initialAmount.setMoney(0, 0);
+            expense = 0;
+            amount.setMoney(0, 0);
+        } else {
+            System.out.println("Date is still valid");
+        }
+    }
+
+    /**
+     * Method that spends the funds in an ExpenseAccount
+     *
+     * @param dollars - int value that represents dollars
+     * @param cents   - int value that represents cents
+     * @return nothing
+     */
+    public void expend(int dollars, int cents) throws CloneNotSupportedException {
+        //Test money to check if the operation is valid
+        Money newMoney = (Money) amount.clone();
+        if (dollars > -1 || cents > -1 && cents > 99) {
+            //Checks for a valid dollar and cent amount
+            newMoney.add(-dollars, -cents);
+        } else {
+            throw new IllegalArgumentException("Value added cannot be negative amount");
+        }
+        //if the 'added' or expended amount is less than current amount, go through
+        if (newMoney.getMoney() > 0) {
+            //Sets the actual amount of money for the actual amount
+            amount.add(-dollars, -cents);
+            expense += dollars + (double) cents / 100;
+        } else {
+            throw new IllegalArgumentException("Cannot withdraw more than remaining amount of money");
+        }
+    }
+    /**
+     * Method that allows the employee to add the expense of a Bill to their account so that the Bill is paid.
+     *
+     * @param bill - Valid Bill Object
+     * @param  payDate - Valid Date Object
+     * @return nothing
+     *
+     * Ensures that the amount on the Bill is valid and that the Date is also valid as well.
+     * */
+    public void addBill(Bill bill, Date payDate) throws CloneNotSupportedException{
+        //Checks if the bill added is less than the remaining amount of money in the account
+        //and checks if the paid date is not over the fiscal end date
+        if(bill.getAmount().getMoney() <= remainingExpense() && payDate.compareTo(fiscalEnd) >= 0){
+            expense += bill.getAmount().getMoney();
+            bill.setPaid(payDate);
+            billCount++;
+        }
+        else{
+            throw new IllegalArgumentException("Invalid Bill or pay date.");
+        }
+
+    }
+    /**
+     * Method that returns the number of valid Bills paid.
+     *
+     * @param - nothing
+     * @return int that is the number count of Bills paid
+     * */
+    public int numBillPaid(){
+        return billCount;
+    }
+
+
+}

@@ -3,7 +3,7 @@ Java code for CSS143 course
 
 Projects contained in this file:
 
-*Pizza Simulator* - Final Project that teaches inheiritance and combines all prior class utilization.
+*Pizza Simulator* - Final Project that teaches inheiritance and combines all prior class utilization. Does not contain all classes
 
 *LinkedLists* - Introduction to Linked List data structures in Java.
 
